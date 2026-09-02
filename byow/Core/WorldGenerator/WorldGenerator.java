@@ -1,6 +1,7 @@
 package byow.Core.WorldGenerator;
 
 import byow.TileEngine.TETile;
+import byow.TileEngine.Tileset;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,24 @@ public class WorldGenerator {
         int[][] regions = new int[WIDTH][HEIGHT];
         List<Room> rooms = new ArrayList<>();
 
+        initWorld(world);
+
         RoomGenerator roomGenerator = new RoomGenerator();
 
         roomGenerator.generate(world, regions, rooms, random);
 
+        MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, rooms.size());
+
+        mazeGenerator.generateMaze();
+
         return world;
     }
 
+    private static void initWorld(TETile[][] world) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                world[i][j] = Tileset.NOTHING;
+            }
+        }
+    }
 }
