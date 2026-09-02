@@ -3,6 +3,7 @@ package byow.Core.WorldGenerator;
 import byow.TileEngine.TETile;
 import byow.TileEngine.Tileset;
 
+import java.util.List;
 import java.util.Random;
 
 import static byow.Core.RandomUtils.uniform;
@@ -10,7 +11,7 @@ import static byow.Core.RandomUtils.uniform;
 /**
  * 用于在地图中随机生成并放置互不重叠的矩形房间。
  *
- * 通过 {@link #generate(TETile[][], Random)} 方法生成房间。
+ * 通过 {@link #generate(TETile[][], int[][], List<Room>, Random)} 方法生成房间。
  * */
 public class RoomGenerator {
 
@@ -26,7 +27,7 @@ public class RoomGenerator {
      * @param random 随机种子
      * @return 生成房间后的地图
      */
-    public TETile[][] generate(TETile[][] world, Random random) {
+    public TETile[][] generate(TETile[][] world, int[][] regions, List<Room> rooms, Random random) {
         // 初始化地图的宽、高和覆盖情况
         this.width = world.length;
         this.height = world[0].length;
