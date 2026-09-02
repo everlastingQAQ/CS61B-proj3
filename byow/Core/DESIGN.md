@@ -27,7 +27,7 @@
 - Core/
     - WorldGenerator/
         - WorldGenerator.java -- 总调度
-        - HomeGenerator.java -- 放置不重叠的矩形
+        - RoomGenerator.java -- 放置不重叠的矩形
         - MazeGenerator.java -- 放置迷宫
         - RegionConnector.java -- 连接矩形和迷宫
         - DeadEndRemover.java -- 移除死胡同
