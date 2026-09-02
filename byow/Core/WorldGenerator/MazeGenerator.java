@@ -36,7 +36,7 @@ public class MazeGenerator {
 
     /**
      * 判断这个节点能不能挖开
-     * - 只有是NOTHING可以
+     * - 只有是WALL可以
      * @return 返回判断
       */
 
@@ -44,7 +44,7 @@ public class MazeGenerator {
         if (width < 1 || height < 1 || width >= WIDTH - 1 || height >= HEIGHT - 1) {
             return false;
         }
-        return world[width][height].equals(Tileset.NOTHING);
+        return world[width][height].equals(Tileset.WALL);
     }
 
     /**

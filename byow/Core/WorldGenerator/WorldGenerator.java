@@ -21,12 +21,12 @@ public class WorldGenerator {
 
         initWorld(world);
 
+        // 生成房间
         RoomGenerator roomGenerator = new RoomGenerator();
-
         roomGenerator.generate(world, regions, rooms, random);
 
+        // 生成迷宫
         MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, rooms.size());
-
         mazeGenerator.generateMaze();
 
         return world;
@@ -35,7 +35,7 @@ public class WorldGenerator {
     private static void initWorld(TETile[][] world) {
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                world[i][j] = Tileset.NOTHING;
+                world[i][j] = Tileset.WALL;
             }
         }
     }
