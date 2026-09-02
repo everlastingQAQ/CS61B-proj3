@@ -11,8 +11,8 @@ public class Engine {
     /*
      * 你可以自由修改地图的宽度和高度。
      */
-    public static final int WIDTH = 100;
-    public static final int HEIGHT = 60;
+    public static final int WIDTH = 101;
+    public static final int HEIGHT = 61;
 
     /**
      * 用于开始并探索一个新的世界。
