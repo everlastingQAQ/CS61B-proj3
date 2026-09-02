@@ -18,42 +18,43 @@ public class RoomGenerator {
     private static final int MAX_TIMES = 200;
     private int width;
     private int height;
-    private boolean[][] covered;
 
     /**
-     * 在给定地图中随机生成矩形房间。
+     * 在给定地图中随机生成矩形房间，并记录和标记房间的位置和大小。
+     * 生成的房间互不重叠且不会紧贴。
      *
      * @param world 要生成房间的地图
-     * @param random 随机种子
-     * @return 生成房间后的地图
+     * @param regions 每个格子的连通块编号
+     * @param rooms 记录房间的位置和大小
+     * @param random 随机数生成器
      */
-    public TETile[][] generate(TETile[][] world, int[][] regions, List<Room> rooms, Random random) {
+    public void generate(TETile[][] world, int[][] regions, List<Room> rooms, Random random) {
         // 初始化地图的宽、高和覆盖情况
         this.width = world.length;
         this.height = world[0].length;
-        this.covered = new boolean[width][height];
 
         for (int times = 0; times < MAX_TIMES; times++) {
             int roomWidth = randomOdd(random, 5, 15);
             int roomHeight = randomOdd(random, 5, 11);
-            int recX = randomOdd(random, 1, width - roomWidth - 1);
-            int recY = randomOdd(random, 1, height - roomHeight - 1);
+            int roomX = randomOdd(random, 1, this.width - roomWidth - 1);
+            int roomY = randomOdd(random, 1, this.height - roomHeight - 1);
 
             // 检查房间位置是否合法
-            if (!isLegal(recX, recY, roomWidth, roomHeight)) {
+            if (!isLegal(roomX, roomY, roomWidth, roomHeight, regions)) {
                 continue;
             }
 
+            rooms.add(new Room(roomX, roomY, roomWidth, roomHeight));
+
             // 覆盖房间并且标记
-            for (int i = recX; i < recX + roomWidth; i++) {
-                for (int j = recY; j < recY + roomHeight; j++) {
+            for (int i = roomX; i < roomX + roomWidth; i++) {
+                for (int j = roomY; j < roomY + roomHeight; j++) {
                     world[i][j] = Tileset.FLOOR;
-                    this.covered[i][j] = true;
+                    regions[i][j] = rooms.size();
                 }
             }
         }
 
-        return world;
     }
 
     /**
@@ -64,10 +65,11 @@ public class RoomGenerator {
      * @param y 房间左下角的纵坐标
      * @param width 宽度
      * @param height 高度
+     * @param regions 每个格子的连通块编号
      *
      * @return 生成位置是否合法
      * */
-    private boolean isLegal(int x, int y, int width, int height) {
+    private boolean isLegal(int x, int y, int width, int height, int[][] regions) {
         // 检查房间位置是否超出地图大小，且地图四周不放置房间
         if (x + width >= this.width || y + height >= this.height
                 || x < 1 || y < 1) {
@@ -76,7 +78,7 @@ public class RoomGenerator {
 
         for (int i = x - 1; i <= x + width; i++) {
             for (int j = y - 1; j <= y + height; j++) {
-                if (this.covered[i][j]) {
+                if (regions[i][j] != 0) {
                     return false;
                 }
             }
