@@ -17,11 +17,22 @@
 
 #### a.生成方法
 [迷宫设计](https://indienova.com/indie-game-development/rooms-and-mazes-a-procedural-dungeon-generator/#iah-5)
-1. 生成世界
-2. 随机种子
-...
+1. 放置不重叠的矩形
+2. 在空隙中放置迷宫（洪水填充算法）
+3. 寻找生成树，同时随机增加开放点
+4. 移除死胡同
 
-#### b.加入人物
+#### b.主要架构
+``` text
+- Core/
+    - WorldGenerator/
+        - WorldGenerator.java -- 总调度
+        - HomeGenerator.java -- 放置不重叠的矩形
+        - MazeGenerator.java -- 放置迷宫
+        - RegionConnector.java -- 连接矩形和迷宫
+        - DeadEndRemover.java -- 移除死胡同
+```
+
 
 ### 2.交互
 
