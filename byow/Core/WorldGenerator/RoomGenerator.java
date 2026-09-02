@@ -10,9 +10,8 @@ import static byow.Core.RandomUtils.uniform;
 /**
  * 用于在地图中随机生成并放置互不重叠的矩形房间。
  *
- * 通过 {@link #generate(TETile[][], long)} 方法生成房间。
+ * 通过 {@link #generate(TETile[][], Random)} 方法生成房间。
  * */
-
 public class RoomGenerator {
 
     private static final int MAX_TIMES = 200;
@@ -24,16 +23,14 @@ public class RoomGenerator {
      * 在给定地图中随机生成矩形房间。
      *
      * @param world 要生成房间的地图
-     * @param seed 随机种子
+     * @param random 随机种子
      * @return 生成房间后的地图
      */
-    public TETile[][] generate(TETile[][] world, long seed) {
+    public TETile[][] generate(TETile[][] world, Random random) {
         // 初始化地图的宽、高和覆盖情况
         this.width = world.length;
         this.height = world[0].length;
         this.covered = new boolean[width][height];
-
-        Random random = new Random(seed);
 
         for (int times = 0; times < MAX_TIMES; times++) {
             int roomWidth = randomOdd(random, 5, 15);
