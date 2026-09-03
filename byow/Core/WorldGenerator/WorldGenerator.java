@@ -18,6 +18,7 @@ public class WorldGenerator {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         int[][] regions = new int[WIDTH][HEIGHT];
         List<Room> rooms = new ArrayList<>();
+        int regionSize = 0;
 
         initWorld(world);
 
@@ -26,7 +27,7 @@ public class WorldGenerator {
         roomGenerator.generate(world, regions, rooms, random);
 
         // 生成迷宫
-        MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, rooms.size());
+        MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, regionSize);
         mazeGenerator.generateMaze();
 
         return world;
