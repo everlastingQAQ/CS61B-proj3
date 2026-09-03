@@ -1,5 +1,6 @@
 package byow.Core;
 
+import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
@@ -111,8 +112,20 @@ public class Engine {
          * 从而让同一套游戏逻辑同时支持多种输入方式。
          */
 
+        input = input.toUpperCase();
         TETile[][] finalWorldFrame = null;
 
+        if (input.charAt(0) == 'N') {
+            StringBuilder seedString = new StringBuilder();
+            int index = 1;
+            while (input.charAt(index) != 'S') {
+                seedString.append(input.charAt(index));
+                index++;
+            }
+
+            long seed = Long.parseLong(String.valueOf(seedString));
+            finalWorldFrame = WorldGenerator.generate(seed);
+        }
 
         return finalWorldFrame;
     }

@@ -1,5 +1,6 @@
 package byow.Core.WorldGenerator;
 
+import byow.Core.Engine;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
@@ -14,7 +15,9 @@ public class Test {
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
 
-        TETile[][] world = WorldGenerator.generate(0);
+        Engine engine = new Engine();
+
+        TETile[][] world = engine.interactWithInputString(args[0]);
         ter.renderFrame(world);
     }
 }
