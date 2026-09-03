@@ -11,7 +11,7 @@ import static byow.Core.RandomUtils.uniform;
 /**
  * 用于在地图中随机生成并放置互不重叠的矩形房间。
  *
- * <p>通过 {@link #generate(TETile[][], int[][], List<Room>, int, Random)} 方法生成房间。</p>
+ * <p>通过 {@link #generate(TETile[][], int[][], List<Room>, Random)} 方法生成房间。</p>
  * */
 public class RoomGenerator {
 
@@ -33,8 +33,7 @@ public class RoomGenerator {
      * @param rooms 记录房间的位置和大小
      * @param random 随机数生成器
      */
-    public void generate(TETile[][] world, int[][] regions, List<Room> rooms,
-                         int regionSize, Random random) {
+    public void generate(TETile[][] world, int[][] regions, List<Room> rooms, Random random) {
         // 初始化地图的宽、高和覆盖情况
         this.width = world.length;
         this.height = world[0].length;
@@ -51,7 +50,6 @@ public class RoomGenerator {
             }
 
             rooms.add(new Room(roomX, roomY, roomWidth, roomHeight));
-            regionSize++;
 
             // 覆盖房间并且标记
             for (int i = roomX; i < roomX + roomWidth; i++) {

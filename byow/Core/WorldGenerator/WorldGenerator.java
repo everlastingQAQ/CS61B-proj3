@@ -18,13 +18,12 @@ public class WorldGenerator {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         int[][] regions = new int[WIDTH][HEIGHT];
         List<Room> rooms = new ArrayList<>();
-        int regionSize = 0;
 
         initWorld(world);
 
         // 生成房间
         RoomGenerator roomGenerator = new RoomGenerator();
-        roomGenerator.generate(world, regions, rooms, regionSize, random);
+        roomGenerator.generate(world, regions, rooms, random);
 
         // 生成迷宫
         MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, regionSize);
@@ -32,7 +31,7 @@ public class WorldGenerator {
 
         // 生成树
         RegionConnector regionConnector = new RegionConnector();
-        regionConnector.connect(world, regions, random, regionSize);
+        regionConnector.connect(world, regions, random);
 
         // 移走死胡同
         DeadEndRemover deadEndRemover = new DeadEndRemover(world, rooms);
@@ -47,5 +46,15 @@ public class WorldGenerator {
                 world[i][j] = Tileset.WALL;
             }
         }
+    }
+
+    public static int getRegionSize(int[][] regions) {
+        int regionSize = 0;
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                regionSize = Math.max(regionSize, regions[i][j]);
+            }
+        }
+        return regionSize;
     }
 }

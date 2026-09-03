@@ -7,6 +7,7 @@ import java.util.*;
 
 import static byow.Core.Engine.HEIGHT;
 import static byow.Core.Engine.WIDTH;
+import static byow.Core.WorldGenerator.WorldGenerator.getRegionSize;
 import static java.util.Collections.shuffle;
 
 /**
@@ -50,15 +51,15 @@ public class RegionConnector {
      * @param world      将要进行连接的地图
      * @param regions    每个格子所属的区域编号，0 表示不属于任何区域
      * @param random     随机数生成器
-     * @param regionSize 地图中的区域总数
      */
-    public void connect(TETile[][] world, int[][] regions, Random random, int regionSize) {
+    public void connect(TETile[][] world, int[][] regions, Random random) {
         connectorPositions.clear();
         // 统计可能会变成门的格子
         updatePos(world, regions);
 
         shuffle(connectorPositions, random);
 
+        int regionSize = getRegionSize(regions);
         DSU dsu = new DSU(regionSize + 1);
 
         boolean[][] blocked = new boolean[WIDTH][HEIGHT];
