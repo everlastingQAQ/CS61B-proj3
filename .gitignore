@@ -5,4 +5,4 @@ target/
 *.iml
 out/
 
-*.class
+*.class 

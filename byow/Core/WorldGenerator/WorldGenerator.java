@@ -10,6 +10,16 @@ import java.util.Random;
 import static byow.Core.Engine.HEIGHT;
 import static byow.Core.Engine.WIDTH;
 
+
+/**
+ * 负责生成完整的游戏世界。
+ *
+ * <p>地图生成依次经过房间生成、迷宫生成、区域连接、
+ * 死胡同移除以及多余墙壁清理这几个阶段。
+ * 对于相同的随机种子，生成的地图应当保持一致。</p>
+ *
+ * <p>通过 {@link #generate(long)} 方法生成地图。</p>
+ */
 public class WorldGenerator {
 
     public static TETile[][] generate(long seed) {
@@ -43,6 +53,11 @@ public class WorldGenerator {
         return world;
     }
 
+    /**
+     * 初始化地图，将所有格子设置为墙壁。
+     *
+     * @param world 要初始化的地图
+     */
     private static void initWorld(TETile[][] world) {
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
@@ -51,6 +66,15 @@ public class WorldGenerator {
         }
     }
 
+    /**
+     * 删除地图中不再包围有效区域的多余墙壁。
+     *
+     * <p>遍历所有格子，通过 {@link #needDelete(TETile[][], int, int)}
+     * 判断墙壁是否仍然靠近地板或连接点。
+     * 不再需要的墙壁会被替换为 {@link Tileset#NOTHING}。</p>
+     *
+     * @param world 当前地图
+     */
     private static void removeWall(TETile[][] world) {
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
@@ -61,6 +85,18 @@ public class WorldGenerator {
         }
     }
 
+    /**
+     * 判断指定位置的墙壁是否可以删除。
+     *
+     * <p>只有当前位置为墙壁，并且其周围 3 × 3 范围内
+     * 不存在地板或连接点时，该墙壁才被认为是多余的。</p>
+     *
+     * @param world 当前地图
+     * @param x     要检查位置的横坐标
+     * @param y     要检查位置的纵坐标
+     * @return 如果该墙壁可以删除则返回 {@code true}，
+     *         否则返回 {@code false}
+     */
     private static boolean needDelete(TETile[][] world, int x, int y) {
         if (!world[x][y].equals(Tileset.WALL)) {
             return false;
@@ -83,6 +119,15 @@ public class WorldGenerator {
         return true;
     }
 
+    /**
+     * 获取当前地图中最大的区域编号。
+     *
+     * <p>区域编号从 1 开始，0 表示该格子尚未属于任何区域，
+     * 因此最大的区域编号可以作为当前已经生成的区域数量上界。</p>
+     *
+     * @param regions 每个格子所属的区域编号
+     * @return 当前最大的区域编号
+     */
     public static int getRegionSize(int[][] regions) {
         int regionSize = 0;
         for (int i = 0; i < WIDTH; i++) {
@@ -92,12 +137,4 @@ public class WorldGenerator {
         }
         return regionSize;
     }
-
-    // 上、下、左、右四个相邻方向
-    public static final int[][] DIRS = {
-            {1, 0},
-            {-1, 0},
-            {0, 1},
-            {0, -1}
-    };
 }

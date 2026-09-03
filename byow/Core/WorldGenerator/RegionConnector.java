@@ -7,7 +7,6 @@ import java.util.*;
 
 import static byow.Core.Engine.HEIGHT;
 import static byow.Core.Engine.WIDTH;
-import static byow.Core.WorldGenerator.WorldGenerator.DIRS;
 import static byow.Core.WorldGenerator.WorldGenerator.getRegionSize;
 import static java.util.Collections.shuffle;
 
@@ -30,6 +29,14 @@ public class RegionConnector {
 
     // 所有可能用于连接不同区域的候选连接点
     private final List<Connector> connectorPositions = new ArrayList<>();
+
+    // 上、下、左、右四个相邻方向
+    public static final int[][] DIRS = {
+            {1, 0},
+            {-1, 0},
+            {0, 1},
+            {0, -1}
+    };
 
     /**
      * 连接地图中所有彼此独立的房间和迷宫区域。

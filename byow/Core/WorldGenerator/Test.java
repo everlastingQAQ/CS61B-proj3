@@ -14,7 +14,7 @@ public class Test {
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
 
-        TETile[][] world = WorldGenerator.generate(114514);
+        TETile[][] world = WorldGenerator.generate(0);
         ter.renderFrame(world);
     }
 }
