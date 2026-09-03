@@ -19,7 +19,7 @@ import static java.util.Collections.shuffle;
  * 必要的连接点一定会被打开，同时以较小概率打开额外连接点，
  * 从而在地图中产生少量环路。</p>
  *
- * <p>通过 {@link #connect(TETile[][], int[][], Random, int)}
+ * <p>通过 {@link #connect(TETile[][], int[][], Random)}
  * 方法连接地图。</p>
  */
 public class RegionConnector {

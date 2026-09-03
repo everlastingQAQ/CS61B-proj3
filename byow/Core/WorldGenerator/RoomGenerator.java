@@ -15,7 +15,7 @@ import static byow.Core.RandomUtils.uniform;
  * */
 public class RoomGenerator {
 
-    private static final int MAX_TIMES = 200;
+    private static final int MAX_TIMES = 700;
     private int width;
     private int height;
 
