@@ -26,12 +26,13 @@ public class WorldGenerator {
         roomGenerator.generate(world, regions, rooms, random);
 
         // 生成迷宫
-        MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, regionSize);
+        MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, getRegionSize(regions));
         mazeGenerator.generateMaze();
 
         // 生成树
         RegionConnector regionConnector = new RegionConnector();
         regionConnector.connect(world, regions, random);
+
 
         // 移走死胡同
         DeadEndRemover deadEndRemover = new DeadEndRemover(world, rooms);

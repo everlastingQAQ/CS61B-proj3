@@ -26,7 +26,7 @@ import static byow.Core.Engine.WIDTH;
  *      - c. 迷宫用 FLOOR 表示
  * 3. 依赖/改变 外来变量
  *      - a. 传入 regions, 标记迷宫的 regions 编号
- *      - b. 传入 regionSize, 遇到新连通块 ++
+ *      - b. 调用WorldGenerator.getRegionSize, 遇到新连通块 ++
  *      - c. 传入 world, 生成迷宫
  */
 
