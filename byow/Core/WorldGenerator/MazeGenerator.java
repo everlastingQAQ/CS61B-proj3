@@ -11,6 +11,25 @@ import java.util.Stack;
 import static byow.Core.Engine.HEIGHT;
 import static byow.Core.Engine.WIDTH;
 
+/**
+ * 通过洪水填充算法随机挖开迷宫
+ * 1. 洪水填充算法(dfs)实现
+ *      - a. 每次从当前位置 ~ 开始, 检查周围两格能不能挖 , ~ # #, 如果挖最终变成 · · ~
+ *      - b. 遍历地图, 找到符合 a 条件的当前位置, 从这个位置开始洪水填充连通块
+ *      - c. 用stack记录dfs挖取路径
+ *      - d. 如果遇到周围不存在可以挖的, pop掉路径顶, 回溯到可以挖的地方
+ *      - e. 如果周围存在可以挖的, 随机选取合理方向, 将新位置push进路径
+ *      - f. 如果栈空, 从上一次遍历地图的地方继续开始 a
+ * 2. 实现细节
+ *      - a. WALL 表示可以挖, 其他不行
+ *      - b. 每次随机选取方向都通过 random.nextInt() 判断
+ *      - c. 迷宫用 FLOOR 表示
+ * 3. 依赖/改变 外来变量
+ *      - a. 传入 regions, 标记迷宫的 regions 编号
+ *      - b. 传入 regionSize, 遇到新连通块 ++
+ *      - c. 传入 world, 生成迷宫
+ */
+
 public class MazeGenerator {
     private TETile[][] world;
     private Random random;

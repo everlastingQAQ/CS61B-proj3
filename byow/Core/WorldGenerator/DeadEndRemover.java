@@ -10,11 +10,14 @@ import static byow.Core.Engine.HEIGHT;
 
 /**
  * 移走所有死胡同
- * 1. 通过判断能走的邻居判断是否能通行, 如果只有一个则是
- *      - 可以通行的 : FLOOR, DOOR(两个)
- * 2. 当前如果是房子区域不参与判断, 房子区域依靠传进来的rooms判断
- * 3. 如果当前不是FLOOR不参与判断
- * 4. 死胡同变成WALL
+ * 1. 实现细节
+ *      a. 如果满足 "非房子区域" "当前板块是FLOOR" 则参与判断
+ *      b. 通过判断能通行的邻居的个数, 只有一个邻居判定为死胡同
+ *      c. 能通行的邻居包括 : FLOOR, LOCKED_DOOR, UNLOCKED_DOOR
+ *      d. 死胡同变成 WALL
+ *  2. 依赖/改变 外部变量
+ *      a. 传入 rooms 判断房子区域在哪里
+ *      b. 传入 world 移走死胡同
  */
 
 public class DeadEndRemover {

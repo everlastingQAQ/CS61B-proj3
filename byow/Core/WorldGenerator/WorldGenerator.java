@@ -30,6 +30,12 @@ public class WorldGenerator {
         MazeGenerator mazeGenerator = new MazeGenerator(world, random, regions, regionSize);
         mazeGenerator.generateMaze();
 
+        // 生成树
+
+        // 移走死胡同
+        DeadEndRemover deadEndRemover = new DeadEndRemover(world, rooms);
+        deadEndRemover.removeDeadEnd();
+
         return world;
     }
 
