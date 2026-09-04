@@ -45,11 +45,14 @@ public class Engine {
      * 持续读取用户输入并处理对应操作。
      * */
     public void interactWithKeyboard() {
-        // 新建输入源
-        InputSource inputSource = Input.keyboardInput();
+        // 初始化绘图环境
+        worldrender.initialize();
 
         // 渲染菜单
         MenuRender.render();
+
+        // 新建输入源
+        InputSource inputSource = Input.keyboardInput();
 
         // 处理输入
         interact(inputSource);

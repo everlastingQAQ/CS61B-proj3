@@ -10,10 +10,6 @@ import static byow.Core.Render.WorldRender.WIDTH;
 public class SeedInputRender {
 
     public static void render(String seed) {
-        StdDraw.setCanvasSize(800, 600);
-        StdDraw.setXscale(0, WIDTH);
-        StdDraw.setYscale(0, HEIGHT);
-
         StdDraw.clear(Color.BLACK);
         StdDraw.setPenColor(Color.WHITE);
 

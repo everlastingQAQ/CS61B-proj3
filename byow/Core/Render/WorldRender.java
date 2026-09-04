@@ -11,7 +11,7 @@ public class WorldRender {
 
     private final TERenderer ter = new TERenderer();
 
-    public WorldRender() {
+    public void initialize() {
         ter.initialize(WIDTH, HEIGHT);
     }
 
