@@ -6,6 +6,9 @@ import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * Engine 类负责根据当前的游戏状态执行对应逻辑，是游戏的核心控制器。
  *
@@ -25,9 +28,13 @@ public class Engine {
     /** 当前游戏所处的状态。 */
     private GameState state = GameState.MENU;
 
+    /** 当前游戏历史存档 */
+    private StringBuilder historyString = new StringBuilder();
+
     /** 游戏世界的宽度和高度 */
     public static final int WIDTH = 101;
     public static final int HEIGHT = 61;
+
 
     /**
      * 键盘交互模式
@@ -59,6 +66,8 @@ public class Engine {
 
         while (inputSource.possibleNextInput()) {
             char c = Character.toUpperCase(inputSource.getNextKey());
+            // 存储历史命令
+            historyString.append(c);
 
             switch (state) {
                 case MENU -> handleMenuInput(c);
