@@ -1,132 +1,125 @@
 package byow.Core;
 
+import byow.Core.Input.Input;
+import byow.Core.Input.InputSource;
 import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TERenderer;
 import byow.TileEngine.TETile;
 
+/**
+ * Engine 类负责根据当前的游戏状态执行对应逻辑，是游戏的核心控制器。
+ *
+ * @author Everlasting
+ * */
 public class Engine {
 
-    // 创建一个地图渲染器
-    TERenderer ter = new TERenderer();
+    /** 用于将当前世界渲染到屏幕上的地图渲染器。 */
+    private TERenderer ter = new TERenderer();
 
-    /*
-     * 你可以自由修改地图的宽度和高度。
-     */
+    /** 当前游戏世界。 */
+    private TETile[][] world = null;
+
+    /** 用于暂存用户输入的新世界随机种子。 */
+    private StringBuilder seedString = new StringBuilder();
+
+    /** 当前游戏所处的状态。 */
+    private GameState state = GameState.MENU;
+
+    /** 游戏世界的宽度和高度 */
     public static final int WIDTH = 101;
     public static final int HEIGHT = 61;
 
     /**
-     * 用于开始并探索一个新的世界。
-     *
-     * 这个方法应该处理用户的所有键盘输入，
-     * 包括主菜单中的输入。
-     */
+     * 键盘交互模式
+     * 持续读取用户输入并处理对应操作。
+     * */
     public void interactWithKeyboard() {
+        InputSource inputSource = Input.keyboardInput();
+        interact(inputSource);
     }
 
     /**
-     * 这个方法用于自动评测（autograding）和测试你的代码。
+     * 指令交互模式（并用于自动评分，不要大幅度修改）
      *
-     * 输入参数 input 是一串字符，例如：
-     *
-     * "n123sswwdasdassadwas"
-     * "n123sss:q"
-     * "lwww"
-     *
-     * Engine 应该表现得和用户在 interactWithKeyboard()
-     * 中一个一个敲入这些字符时完全一样。
-     *
-     *
-     * 需要记住：
-     *
-     * 以 ":q" 结尾的字符串应该让游戏：
-     *
-     * 保存（save）并退出（quit）。
-     *
-     *
-     * 例如：
-     *
-     * interactWithInputString("n123sss:q")
-     *
-     * 我们期望游戏先执行前 7 个命令：
-     *
-     * n123sss
-     *
-     * 然后执行：
-     *
-     * :q
-     *
-     * 保存当前游戏状态并退出。
-     *
-     *
-     * 如果之后再执行：
-     *
-     * interactWithInputString("l")
-     *
-     * 那么游戏应该恢复到刚才保存时完全相同的状态。
-     *
-     *
-     * 换句话说，下面这两次调用：
-     *
-     * interactWithInputString("n123sss:q")
-     *
-     * 然后：
-     *
-     * interactWithInputString("lww")
-     *
-     *
-     * 最后得到的世界状态，应该和直接调用：
-     *
-     * interactWithInputString("n123sssww")
-     *
-     * 得到的世界状态完全一致。
-     *
-     *
-     * @param input
-     *        要输入给程序的一串字符
-     *
-     * @return
-     *        一个二维 TETile[][] 数组，
-     *        表示最终世界的状态
+     * @param input 要输入给程序的一串字符
+     * @return 处理完所有输入后最终的世界状态
      */
     public TETile[][] interactWithInputString(String input) {
+        InputSource inputSource = Input.stringInput(input);
+        interact(inputSource);
+        return world;
+    }
 
-        /*
-         * TODO：
-         *
-         * 完成这个方法。
-         *
-         * 让 Engine 根据参数 input 中传入的字符串运行游戏，
-         *
-         * 最后返回一个二维 tile 数组，
-         *
-         * 这个数组应该和用户通过 interactWithKeyboard()
-         * 输入完全相同指令时，屏幕最终显示出来的世界一致。
-         *
-         *
-         * 可以查看：
-         *
-         * proj3.byow.InputDemo
-         *
-         * 来看看如何设计一个比较干净的输入接口，
-         * 从而让同一套游戏逻辑同时支持多种输入方式。
-         */
+    /**
+     * 统一处理来自不同输入源的输入，并根据不同的 GameState 对输入进行不同的处理。
+     *
+     * @param inputSource 当前使用的输入源
+     * */
+    private void interact(InputSource inputSource) {
 
-        input = input.toUpperCase();
-        TETile[][] finalWorldFrame = null;
+        while (inputSource.possibleNextInput()) {
+            char c = Character.toUpperCase(inputSource.getNextKey());
 
-        if (input.charAt(0) == 'N') {
-            StringBuilder seedString = new StringBuilder();
-            int index = 1;
-            while (input.charAt(index) != 'S') {
-                seedString.append(input.charAt(index));
-                index++;
+            switch (state) {
+                case MENU -> handleMenuInput(c);
+                case SEED -> handleSeedInput(c);
+                case PLAYING -> handlePlayingInput(c);
             }
-
-            long seed = Long.parseLong(String.valueOf(seedString));
-            finalWorldFrame = WorldGenerator.generate(seed);
         }
 
-        return finalWorldFrame;
+    }
+
+
+    /**
+     * 处理主菜单状态下的输入。
+     *
+     * N：开始新游戏并进入种子输入状态。
+     * L：加载已有游戏。
+     * Q：退出游戏。
+     *
+     * @param c 用户输入的字符
+     */
+    private void handleMenuInput(char c) {
+        switch (c) {
+            case 'N':
+                state = GameState.SEED;
+                break;
+            case 'L':
+                loadGame();
+                break;
+            case 'Q':
+                quit();
+                break;
+        }
+    }
+
+    /**
+     * 处理随机种子的输入
+     *
+     * 在读取到 S 之前，将输入的字符依次加入 seedString
+     * 在读取到 S 之后，将根据种子生成世界，并进入 PLAYING 状态
+     *
+     * @param c 用户输入的字符
+     */
+    private void handleSeedInput(char c) {
+        if (c == 'S') {
+            long seed = Long.parseLong(seedString.toString());
+            world = WorldGenerator.generate(seed);
+            state = GameState.PLAYING;
+        } else {
+            seedString.append(c);
+        }
+    }
+
+
+    /**
+     * 处理游戏进行状态下的输入。
+     *
+     * 后续将在这里处理玩家移动、保存游戏等操作。
+     *
+     * @param c 用户输入的字符
+     */
+    private void handlePlayingInput(char c) {
+
     }
 }

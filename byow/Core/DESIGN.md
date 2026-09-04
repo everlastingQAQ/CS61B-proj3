@@ -48,15 +48,48 @@
 
 ## 阶段二
 
-### 1. 搭建好 Input 框架
+### 1. 搭建 Input 输入框架
 
-### 2. 实现主菜单与基础命令
+```text
+Core/
+└── Input/
+    ├── Input.java
+    ├── InputSource.java
+    ├── KeyboardInputSource.java
+    └── StringInputSource.java
+```
 
-### 3. 实现存档与读档
+* `InputSource`：统一输入接口。
+* `KeyboardInputSource`：处理键盘输入。
+* `StringInputSource`：处理字符串输入，用于测试和自动评测。
+* `Input`：统一创建不同类型的输入源。
 
-### 4. 加入玩家系统
+`Engine` 只通过 `InputSource` 获取输入，不需要区分输入来自键盘还是字符串。
 
+### 2. 搭建 Engine 输入处理框架
 
+`Engine` 负责游戏流程控制，根据当前 `GameState` 将输入分发给对应逻辑。
+
+目前状态：
+
+* `MENU`：处理主菜单输入，如 `N / L / Q`。
+* `SEED`：读取新游戏种子，读到 `S` 后生成世界。
+* `PLAYING`：处理游戏过程中的输入。
+
+整体流程：
+
+```text
+InputSource
+    ↓
+Engine.interact()
+    ↓
+GameState
+    ├── MENU
+    ├── SEED
+    └── PLAYING
+```
+
+具体地图生成、玩家移动等逻辑由对应模块负责，`Engine` 主要负责流程控制和调用。
 
 ## 阶段三
 
