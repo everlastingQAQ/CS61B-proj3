@@ -8,8 +8,10 @@ import byow.Core.Render.SeedInputRender;
 import byow.Core.Render.WorldRender;
 import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TETile;
-import edu.princeton.cs.introcs.StdDraw;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 
 /**
@@ -115,10 +117,15 @@ public class Engine {
                 SeedInputRender.render("");
                 break;
             case 'L':
-//                loadGame();
+                // 删除L
+                historyString.deleteCharAt(historyString.length() - 1);
+
+                // 加载存档，生成世界
+                loadGame();
                 break;
             case 'Q':
-//                quit();
+                // TODO：菜单界面退出应该仅仅需要关闭UI界面即可？ 查看文档
+                quit();
                 break;
         }
     }
@@ -133,6 +140,7 @@ public class Engine {
      */
     private void handleSeedInput(char c) {
         if (c == 'S') { // 种子输入完了
+
             // 获取种子
             long seed = Long.parseLong(seedString.toString());
 
@@ -152,6 +160,7 @@ public class Engine {
             worldrender.render(world);
 
         } else { // 种子没有输入完
+
             // 更新当前种子
             seedString.append(c);
 
@@ -168,14 +177,90 @@ public class Engine {
      * @param c 用户输入的字符
      */
     private void handlePlayingInput(char c) {
+
         switch(c) {
-            case 'W' -> player.moveUp(world);
-            case 'A' -> player.moveLeft(world);
-            case 'S' -> player.moveDown(world);
-            case 'D' -> player.moveRight(world);
+            case 'W' :
+                player.moveUp(world);
+                break;
+            case 'A' :
+                player.moveLeft(world);
+                break;
+            case 'S' :
+                player.moveDown(world);
+                break;
+            case 'D' :
+                player.moveRight(world);
+                break;
+            case 'Q' :
+                // :Q 如果是该命令必须立即保存并退出
+                if (historyString.charAt(historyString.length() - 2) == ':') {
+
+                    // 从存档字符中删除 :Q 这个命令
+                    historyString.deleteCharAt(historyString.length() - 1);
+                    historyString.deleteCharAt(historyString.length() - 1);
+
+                    // 保存文档
+                    saveGame();
+
+                    // 退出
+                    quit();
+                }
+                break;
+
         }
         // 渲染新世界
         worldrender.render(world);
     }
 
+    /**
+     * 加载存档世界
+     * 1.如果存档不存在
+     *      - 系统应当直接退出并关闭 UI，不能产生错误
+     * 2.存档存在
+     *      - 初始化historyString
+     *      - 通过interactWithInputString运行历史命令
+     *      - 通过interactWithInputString的返回值初始化world
+     */
+    private void loadGame() {
+        // 读取路径
+        Path path = Path.of("byow/Core/Save/savefile.txt");
+
+        // 加载世界但不存在之前的存档，直接退出并关闭 UI
+        if (!Files.exists(path)) {
+            return;
+        }
+
+        try {
+            // 读取存档文件的内容
+            String content = Files.readString(path);
+
+            // 通过 historyString 重现游戏过程，并初始化世界
+            world = interactWithInputString(content);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 存储当前存档  TODO：建立文件夹这个操作应该在初始化的时候做？或者在saveGame的时候发现没有再建立？？
+     */
+
+    private void saveGame() {
+        Path path = Path.of("byow/Core/Save/savefile.txt");
+
+        try {
+            // 如果发现没有Save文件夹就创建
+            Files.createDirectories(path.getParent());
+
+            // 将存档存入文件
+            Files.writeString(path, historyString.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void quit() {
+        System.exit(0);
+    }
 }

@@ -25,7 +25,7 @@ import static java.util.Collections.shuffle;
 public class RegionConnector {
 
     // 冗余连接点被额外打开的概率为 1 / EXTRA_CONNECTOR_CHANCE
-    private static final int EXTRA_CONNECTOR_CHANCE = 20;
+    private static final int EXTRA_CONNECTOR_CHANCE = 40;
 
     // 所有可能用于连接不同区域的候选连接点
     private final List<Connector> connectorPositions = new ArrayList<>();

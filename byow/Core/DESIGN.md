@@ -110,12 +110,11 @@ Core/
 ```
 
 #### 1. 属性
-
-- 当前位置
+当前位置，上一步板块类型
 
 #### 2. 行为
 
-- WASD, moveWUSD(world)
+- WASD， moveWASD，并改变世界
 - get位置
 
 #### 3. 构造
@@ -130,10 +129,15 @@ Core/
 ├── savefile.txt
 ```
 
+0. 注意建立文件夹这个操作应该在初始化的时候做
+
 1. 存储存档文件, Engine.StringBuilder 存储, 最后保存的时候存储进文件
+    - interactWithInputString 的返回值不应取决于输入字符串是否以 :Q 结尾，如果存在:Q，保存世界，否则不保存
+   
 2. 读取存档文件, 并改变状态, 考虑执行Engine.interactWithInputString()改变世界, 最后渲染
 
-`3. 下次加载一个存档文件继续, 1, 2步都变成指定文档. 考虑此时用存档文件初始化Engine.StringBuilder`
+3. 下次加载一个存档文件继续, 1, 2步都变成指定文档. 考虑此时用存档文件初始化Engine.StringBuilder`
+
 
 ## 阶段三
 
