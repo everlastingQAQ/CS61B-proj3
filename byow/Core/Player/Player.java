@@ -26,11 +26,11 @@ public class Player {
         int maxWidth = WIDTH - 1, minWidth = 1;
         int maxHeight = HEIGHT - 1, minHeight = 1;
         int originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
-        int originY = random.nextInt(maxHeight - minHeight + 1) + maxHeight;
+        int originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
 
         while (!isPlaceWalkable(world, originX, originY)) {
             originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
-            originY = random.nextInt(maxHeight - minHeight + 1) + maxHeight;
+            originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
         }
 
         x = originX;
