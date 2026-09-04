@@ -106,7 +106,7 @@ Core/
 ```text
 Core/
 └── Player/
-├── Player.java
+├── player.java
 ```
 
 #### 1. 属性
@@ -130,6 +130,10 @@ Core/
 ├── savefile.txt
 ```
 
+1. 存储存档文件, Engine.StringBuilder 存储, 最后保存的时候存储进文件
+2. 读取存档文件, 并改变状态, 考虑执行Engine.interactWithInputString()改变世界, 最后渲染
+
+`3. 下次加载一个存档文件继续, 1, 2步都变成指定文档. 考虑此时用存档文件初始化Engine.StringBuilder`
 
 ## 阶段三
 
