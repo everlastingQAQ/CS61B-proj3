@@ -91,6 +91,46 @@ GameState
 
 具体地图生成、玩家移动等逻辑由对应模块负责，`Engine` 主要负责流程控制和调用。
 
+### 3. 渲染和 UI
+
+```text
+Core/
+└── UI/
+├── MenuRender.java
+├── WorldRender.java
+└── SeedInputRender.java
+```
+
+### 4. 创建用户和用户行为
+
+```text
+Core/
+└── Player/
+├── Player.java
+```
+
+#### 1. 属性
+
+- 当前位置
+
+#### 2. 行为
+
+- WASD, moveWUSD(world)
+- get位置
+
+#### 3. 构造
+
+- 出生点
+
+### 5. 持久化
+
+```text
+Core/
+└── Save/
+├── savefile.txt
+```
+
+
 ## 阶段三
 
 ### 1. 细节ui和加入属性
