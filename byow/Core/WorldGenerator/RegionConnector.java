@@ -5,8 +5,8 @@ import byow.TileEngine.Tileset;
 
 import java.util.*;
 
-import static byow.Core.Engine.HEIGHT;
-import static byow.Core.Engine.WIDTH;
+import static byow.Core.Render.WorldRender.HEIGHT;
+import static byow.Core.Render.WorldRender.WIDTH;
 import static byow.Core.WorldGenerator.WorldGenerator.getRegionSize;
 import static java.util.Collections.shuffle;
 

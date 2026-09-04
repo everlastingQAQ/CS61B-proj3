@@ -5,8 +5,8 @@ import byow.TileEngine.Tileset;
 
 import java.util.Random;
 
-import static byow.Core.Engine.HEIGHT;
-import static byow.Core.Engine.WIDTH;
+import static byow.Core.Render.WorldRender.HEIGHT;
+import static byow.Core.Render.WorldRender.WIDTH;
 
 /**
  * 玩家属性
@@ -17,12 +17,12 @@ import static byow.Core.Engine.WIDTH;
  * 2. 取得当前横纵坐标
  */
 
-public class player {
+public class Player {
     private int x;
     private int y;
 
-    // 初始化用户, 随机化玩家初始位置 , 横坐标随机[1, WIDTH], 纵坐标随机[1, HEIGHT]
-    public player(TETile[][] world, Random random) {
+    // 初始化用户, 随机化玩家初始位置 , 横坐标随机[1, WIDTH], 纵坐标随机[1, HEIGHT], 并将人物画在世界上
+    public Player(TETile[][] world, Random random) {
         int maxWidth = WIDTH - 1, minWidth = 1;
         int maxHeight = HEIGHT - 1, minHeight = 1;
         int originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
@@ -35,6 +35,7 @@ public class player {
 
         x = originX;
         y = originY;
+        world[x][y] = Tileset.AVATAR;
     }
 
     // 取得玩家现在横坐标位置
@@ -69,14 +70,14 @@ public class player {
     }
 
     // 移动玩家
-    public void moveFront(TETile[][] world) {
+    public void moveUp(TETile[][] world) {
         if (!isPlaceWalkable(world, x, y + 1)) {
             return;
         }
         y++;
     }
 
-    public void moveBack(TETile[][] world) {
+    public void moveDown(TETile[][] world) {
         if (!isPlaceWalkable(world, x, y - 1)) {
             return;
         }

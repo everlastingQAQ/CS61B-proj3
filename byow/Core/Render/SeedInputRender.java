@@ -1,15 +1,15 @@
-package byow.Core.UI;
+package byow.Core.Render;
 
 import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 
-import static byow.Core.Engine.HEIGHT;
-import static byow.Core.Engine.WIDTH;
+import static byow.Core.Render.WorldRender.HEIGHT;
+import static byow.Core.Render.WorldRender.WIDTH;
 
 public class SeedInputRender {
 
-    public static void seedInputRender(String seed) {
+    public static void render(String seed) {
         StdDraw.setCanvasSize(800, 600);
         StdDraw.setXscale(0, WIDTH);
         StdDraw.setYscale(0, HEIGHT);

@@ -19,11 +19,11 @@ public class MemoryGame {
     /** Whether or not the game is over. */
     private boolean gameOver;
     /** Whether or not it is the player's turn. Used in the last section of the
-     * spec, 'Helpful UI'. */
+     * spec, 'Helpful Render'. */
     private boolean playerTurn;
     /** The characters we generate random Strings from. */
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    /** Encouraging phrases. Used in the last section of the spec, 'Helpful UI'. */
+    /** Encouraging phrases. Used in the last section of the spec, 'Helpful Render'. */
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
                                                    "You got this!", "You're a star!", "Go Bears!",
                                                    "Too easy for you!", "Wow, so impressive!"};
