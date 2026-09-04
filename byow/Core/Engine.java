@@ -85,10 +85,10 @@ public class Engine {
                 state = GameState.SEED;
                 break;
             case 'L':
-                loadGame();
+//                loadGame();
                 break;
             case 'Q':
-                quit();
+//                quit();
                 break;
         }
     }
