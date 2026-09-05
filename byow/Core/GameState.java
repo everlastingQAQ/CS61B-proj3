@@ -3,5 +3,7 @@ package byow.Core;
 public enum GameState {
     MENU,
     SEED,
-    PLAYING
+    LOADING,
+    PLAYING,
+    QUIT
 }

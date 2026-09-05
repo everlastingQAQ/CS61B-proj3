@@ -8,7 +8,9 @@ import byow.Core.Render.SeedInputRender;
 import byow.Core.Render.WorldRender;
 import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TETile;
+import edu.princeton.cs.introcs.StdDraw;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -57,7 +59,14 @@ public class Engine {
         InputSource inputSource = Input.keyboardInput();
 
         // 处理输入
-        interact(inputSource);
+        interact(inputSource, true);
+
+        // 键盘交互结束后关闭窗口
+        EventQueue.invokeLater(() -> {
+            for (Frame frame : Frame.getFrames()) {
+                frame.dispose();
+            }
+        });
     }
 
     /**
@@ -71,7 +80,7 @@ public class Engine {
         InputSource inputSource = Input.stringInput(input);
 
         // 处理输入
-        interact(inputSource);
+        interact(inputSource, false);
         return world;
     }
 
@@ -80,10 +89,11 @@ public class Engine {
      *
      * @param inputSource 当前使用的输入源
      * */
-    private void interact(InputSource inputSource) {
+    private void interact(InputSource inputSource, boolean renderEnabled) {
 
         // 若存在下一个输入，则一直处理
         while (inputSource.possibleNextInput()) {
+
             // 从输入源取出输入字符并大写
             char c = Character.toUpperCase(inputSource.getNextKey());
 
@@ -96,8 +106,26 @@ public class Engine {
                 case SEED -> handleSeedInput(c);
                 case PLAYING -> handlePlayingInput(c);
             }
+
+            // 如果是退出状态，就退出循环
+            if (state == GameState.QUIT) {
+                break;
+            }
+
+            // 根据不同的游戏状态处理渲染
+            if (renderEnabled) {
+                render();
+            }
         }
 
+    }
+
+    private void render() {
+        switch (state) {
+            case MENU -> MenuRender.render();
+            case SEED -> SeedInputRender.render(seedString.toString());
+            case PLAYING -> worldrender.render(world);
+        }
     }
 
 
@@ -114,7 +142,6 @@ public class Engine {
         switch (c) {
             case 'N':
                 state = GameState.SEED;
-                SeedInputRender.render("");
                 break;
             case 'L':
                 // 删除L
@@ -122,9 +149,9 @@ public class Engine {
 
                 // 加载存档，生成世界
                 loadGame();
+
                 break;
             case 'Q':
-                // TODO：菜单界面退出应该仅仅需要关闭UI界面即可？ 查看文档
                 quit();
                 break;
         }
@@ -156,16 +183,11 @@ public class Engine {
             // 更新游戏状态
             state = GameState.PLAYING;
 
-            // 渲染游戏画面
-            worldrender.render(world);
-
         } else { // 种子没有输入完
 
             // 更新当前种子
             seedString.append(c);
 
-            // 渲染输入种子画面
-            SeedInputRender.render(seedString.toString());
         }
     }
 
@@ -208,8 +230,7 @@ public class Engine {
                 break;
 
         }
-        // 渲染新世界
-        worldrender.render(world);
+
     }
 
     /**
@@ -217,7 +238,6 @@ public class Engine {
      * 1.如果存档不存在
      *      - 系统应当直接退出并关闭 UI，不能产生错误
      * 2.存档存在
-     *      - 初始化historyString
      *      - 通过interactWithInputString运行历史命令
      *      - 通过interactWithInputString的返回值初始化world
      */
@@ -227,6 +247,7 @@ public class Engine {
 
         // 加载世界但不存在之前的存档，直接退出并关闭 UI
         if (!Files.exists(path)) {
+            quit();
             return;
         }
 
@@ -243,9 +264,8 @@ public class Engine {
     }
 
     /**
-     * 存储当前存档  TODO：建立文件夹这个操作应该在初始化的时候做？或者在saveGame的时候发现没有再建立？？
+     * 存储当前存档，在发现没有Save文件夹的时候自动创建
      */
-
     private void saveGame() {
         Path path = Path.of("byow/Core/Save/savefile.txt");
 
@@ -260,7 +280,11 @@ public class Engine {
         }
     }
 
+    /**
+     * 需要游戏结束的时候将游戏状态调整为 QUIT
+     */
     private void quit() {
-        System.exit(0);
+        state = GameState.QUIT;
     }
+
 }
