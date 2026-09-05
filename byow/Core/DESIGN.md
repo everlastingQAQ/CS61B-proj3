@@ -128,7 +128,7 @@ Core/
 └── Save/
 ├── savefile.txt
 ```
-
+ 
 1. 注意建立文件夹这个操作应该在初始化的时候做
 
 2. 存储存档文件, Engine.StringBuilder 存储, 最后保存的时候存储进文件
