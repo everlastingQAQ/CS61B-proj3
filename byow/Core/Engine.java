@@ -8,7 +8,6 @@ import byow.Core.Render.SeedInputRender;
 import byow.Core.Render.WorldRender;
 import byow.Core.WorldGenerator.WorldGenerator;
 import byow.TileEngine.TETile;
-import edu.princeton.cs.introcs.StdDraw;
 
 import java.awt.*;
 import java.io.IOException;
