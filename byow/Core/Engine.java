@@ -286,5 +286,4 @@ public class Engine {
     private void quit() {
         state = GameState.QUIT;
     }
-
 }
