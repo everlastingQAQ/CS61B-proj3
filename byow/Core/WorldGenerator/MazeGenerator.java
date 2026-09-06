@@ -28,6 +28,8 @@ import static byow.Core.Render.WorldRender.WIDTH;
  *      - a. 传入 regions, 标记迷宫的 regions 编号
  *      - b. 调用WorldGenerator.getRegionSize, 遇到新连通块 ++
  *      - c. 传入 world, 生成迷宫
+ *      
+ * @author icovo
  */
 
 public class MazeGenerator {

@@ -10,12 +10,13 @@ import static byow.Core.Render.WorldRender.WIDTH;
 
 /**
  * 玩家属性
- * 1. 横坐标
- * 2. 纵坐标
+ * 1. 当前位置横坐标
+ * 2. 当前位置纵坐标
  * 3. 上次站的板块的样式
  * 玩家行为
- * 1. W A S D移动, 并改变世界(包括渲染当前站的位置和还原上一步的板块)
- * 2. 取得当前横纵坐标
+ * 1. W A S D移动, 并改变世界(包括改变当前站的位置的板块和还原上一步的板块)
+ * 2. 获取当前横纵坐标的函数
+ * @author icovo
  */
 
 public class Player {
@@ -25,22 +26,31 @@ public class Player {
     // 记录用户上一个行走的板块的样式
     private TETile lastPositionType;
 
-    // 初始化用户, 随机化玩家初始位置 , 横坐标随机[1, WIDTH], 纵坐标随机[1, HEIGHT], 并将人物画在世界上
+    /**
+     * 初始化玩家
+     * 1. 随机化玩家出生位置
+     * 2. 更新游戏界面
+     * @param world 传入游戏界面
+     * @param random 传入种子生成的随机数
+     */
     public Player(TETile[][] world, Random random) {
+        // 随机在[min,max]范围生成当前玩家的位置,横坐标[1, WIDTH],纵坐标[1,HEIGHT]
         int maxWidth = WIDTH - 1, minWidth = 1;
         int maxHeight = HEIGHT - 1, minHeight = 1;
         int originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
         int originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
 
+        // 判断当前位置是否玩家可通行,如果不可以再次随机一个
         while (!isPlaceWalkable(world, originX, originY)) {
             originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
             originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
         }
 
+        // 设定玩家初始位置
         x = originX;
         y = originY;
 
-        // 改变游戏界面
+        // 改变游戏界面,并记录此板块样式
         lastPositionType = world[x][y];
         world[x][y] = Tileset.AVATAR;
     }
@@ -57,7 +67,7 @@ public class Player {
 
     /**
      * 判断可以走的位置
-     * @param world 当前世界
+     * @param world 传入当前世界
      * @param width 判断的位置横坐标
      * @param height 判断的位置纵坐标
      * @return 位置是否可走
@@ -76,10 +86,10 @@ public class Player {
     }
 
     /**
-     * 渲染人物移动后的世界
+     * 改变人物移动后的世界
      * 1. 还原用户当前站的位置的板块
      * 2. 更新 lastPositionType
-     * 3. 渲染用户下一步站的位置
+     * 3. 改变用户下一步站的位置的板块
      * @param world 游戏世界
      * @param width 当前横坐标
      * @param height 当前纵坐标
@@ -100,7 +110,7 @@ public class Player {
     /**
      * 移动玩家:
      * 1. 判断能否移动
-     * 2. 渲染世界
+     * 2. 改变世界
      * 3. 更新坐标
      * @param world 游戏世界
      */

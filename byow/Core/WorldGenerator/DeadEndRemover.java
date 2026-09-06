@@ -18,6 +18,8 @@ import static byow.Core.Render.WorldRender.WIDTH;
  *  2. 依赖/改变 外部变量
  *      a. 传入 rooms 判断房子区域在哪里
  *      b. 传入 world 移走死胡同
+ *
+ *  @author icovo
  */
 
 public class DeadEndRemover {
