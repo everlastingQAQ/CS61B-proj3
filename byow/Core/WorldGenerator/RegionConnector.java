@@ -85,10 +85,10 @@ public class RegionConnector {
             }
 
             if (connected) {
-                world[x][y] = Tileset.UNLOCKED_DOOR;
+                world[x][y] = Tileset.OPEN_DOOR;
                 blockNearby(blocked, x, y);
             } else if (random.nextInt(EXTRA_CONNECTOR_CHANCE) == 0) {
-                world[x][y] = Tileset.UNLOCKED_DOOR;
+                world[x][y] = Tileset.OPEN_DOOR;
             }
         }
     }

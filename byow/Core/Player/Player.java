@@ -81,7 +81,7 @@ public class Player {
             return false;
         }
 
-        return world[width][height].equals(Tileset.UNLOCKED_DOOR)
+        return world[width][height].equals(Tileset.OPEN_DOOR)
             || world[width][height].equals(Tileset.FLOOR);
     }
 

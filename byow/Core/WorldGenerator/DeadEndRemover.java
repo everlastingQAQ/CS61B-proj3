@@ -52,8 +52,8 @@ public class DeadEndRemover {
     // 判断这个点属不属于能走的邻居
     private boolean isWalkable(int width, int height) {
         return world[width][height].equals(Tileset.FLOOR)
-            || world[width][height].equals(Tileset.UNLOCKED_DOOR)
-            || world[width][height].equals(Tileset.LOCKED_DOOR);
+            || world[width][height].equals(Tileset.OPEN_DOOR)
+            || world[width][height].equals(Tileset.CLOSED_DOOR);
     }
 
     // 通过通道附近是否有三面墙判断是不是叶子节点

@@ -113,7 +113,7 @@ public class WorldGenerator {
                     continue;
                 }
                 if (world[nx][ny].equals(Tileset.FLOOR)
-                        || world[nx][ny].equals(Tileset.UNLOCKED_DOOR)) {
+                        || world[nx][ny].equals(Tileset.OPEN_DOOR)) {
                     return false;
                 }
             }
