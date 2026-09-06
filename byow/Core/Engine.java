@@ -119,6 +119,9 @@ public class Engine {
 
     }
 
+    /**
+     * 负责在处理完输入后统一渲染世界
+     * */
     private void render() {
         switch (state) {
             case MENU -> MenuRender.render();

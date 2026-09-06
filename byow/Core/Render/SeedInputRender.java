@@ -7,6 +7,11 @@ import java.awt.*;
 import static byow.Core.Render.WorldRender.HEIGHT;
 import static byow.Core.Render.WorldRender.WIDTH;
 
+/**
+ * 输入种子界面UI
+ *
+ * @author everlasting
+ * */
 public class SeedInputRender {
 
     public static void render(String seed) {

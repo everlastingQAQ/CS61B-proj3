@@ -12,6 +12,8 @@ import static byow.Core.RandomUtils.uniform;
  * 用于在地图中随机生成并放置互不重叠的矩形房间。
  *
  * <p>通过 {@link #generate(TETile[][], int[][], List<Room>, Random)} 方法生成房间。</p>
+ *
+ * @author everlasting
  * */
 public class RoomGenerator {
 

@@ -19,6 +19,8 @@ import static byow.Core.Render.WorldRender.WIDTH;
  * 对于相同的随机种子，生成的地图应当保持一致。</p>
  *
  * <p>通过 {@link #generate(long)} 方法生成地图。</p>
+ *
+ * @author everlasting icovo
  */
 public class WorldGenerator {
 

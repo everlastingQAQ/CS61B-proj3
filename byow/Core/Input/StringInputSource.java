@@ -1,5 +1,10 @@
 package byow.Core.Input;
 
+/**
+ * 从指令读取输入的 InputSource 实现。
+ *
+ * @author everlasting
+ */
 public class StringInputSource implements InputSource {
 
     private final String input;

@@ -21,6 +21,8 @@ import static java.util.Collections.shuffle;
  *
  * <p>通过 {@link #connect(TETile[][], int[][], Random)}
  * 方法连接地图。</p>
+ *
+ * @author everlasting
  */
 public class RegionConnector {
 

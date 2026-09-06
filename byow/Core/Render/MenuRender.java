@@ -7,6 +7,12 @@ import java.awt.*;
 import static byow.Core.Render.WorldRender.HEIGHT;
 import static byow.Core.Render.WorldRender.WIDTH;
 
+
+/**
+ * 主菜单UI
+ *
+ * @author everlasting
+ * */
 public class MenuRender {
 
     public static void render() {
