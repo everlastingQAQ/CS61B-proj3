@@ -28,7 +28,6 @@ import java.util.Stack;
  *
  * @author icovo everlasting
  */
-
 public class MazeGenerator {
     private final TETile[][] world;
     private final Random random;
