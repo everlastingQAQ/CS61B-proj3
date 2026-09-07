@@ -34,6 +34,15 @@ public class WorldRenderer {
         this.tileRenderer = tileRenderer;
     }
 
+    public WorldRenderer(ShapeRenderer shapeRenderer,
+                         SpriteBatch batch,
+                         BitmapFont font,
+                         float tileSize) {
+        this.shapeRenderer = shapeRenderer;
+        this.batch = batch;
+        this.tileRenderer = new TileRenderer(batch, font, shapeRenderer, tileSize);
+    }
+
     /**
      * 渲染世界
      * @param world 传入需要渲染的世界
