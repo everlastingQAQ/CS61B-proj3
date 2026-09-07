@@ -1,9 +1,12 @@
 package byow.game.render;
 
 import byow.game.tile.TETile;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import static byow.game.GameConfig.WORLD_WIDTH;
 
 /**
  * 负责渲染一个世界
@@ -40,7 +43,14 @@ public class WorldRenderer {
                          float tileSize) {
         this.shapeRenderer = shapeRenderer;
         this.batch = batch;
-        this.tileRenderer = new TileRenderer(batch, font, shapeRenderer, tileSize);
+
+        // 计算世界横向占据空间
+        float worldPixelWidth = WORLD_WIDTH * tileSize;
+
+        // 计算世界横向偏移量, 让世界水平居中
+        float offsetX = (Gdx.graphics.getWidth() - worldPixelWidth) / 2f;
+
+        this.tileRenderer = new TileRenderer(batch, font, shapeRenderer, tileSize, offsetX);
     }
 
     /**
