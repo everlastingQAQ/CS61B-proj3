@@ -61,8 +61,8 @@ public class WorldGenerator {
      * @param world 要初始化的地图
      */
     private static void initWorld(TETile[][] world) {
-        for (int i = 0; i < WORLD_WIDTH; i++) {
-            for (int j = 0; j < WORLD_HEIGHT; j++) {
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world[0].length; j++) {
                 world[i][j] = Tileset.WALL;
             }
         }
@@ -78,8 +78,8 @@ public class WorldGenerator {
      * @param world 当前地图
      */
     private static void removeWall(TETile[][] world) {
-        for (int i = 0; i < WORLD_WIDTH; i++) {
-            for (int j = 0; j < WORLD_HEIGHT; j++) {
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world[0].length; j++) {
                 if (needDelete(world, i, j)) {
                     world[i][j] = Tileset.NOTHING;
                 }
@@ -108,7 +108,7 @@ public class WorldGenerator {
             for (int dy = -1; dy <= 1; dy++) {
                 int nx = x + dx;
                 int ny = y + dy;
-                if (nx < 0 || nx >= WORLD_WIDTH || ny < 0 || ny >= WORLD_HEIGHT) {
+                if (nx < 0 || nx >= world.length || ny < 0 || ny >= world[0].length) {
                     continue;
                 }
                 if (world[nx][ny].equals(Tileset.FLOOR)
@@ -132,9 +132,9 @@ public class WorldGenerator {
      */
     public static int getRegionSize(int[][] regions) {
         int regionSize = 0;
-        for (int i = 0; i < WORLD_WIDTH; i++) {
-            for (int j = 0; j < WORLD_HEIGHT; j++) {
-                regionSize = Math.max(regionSize, regions[i][j]);
+        for (int[] region : regions) {
+            for (int j = 0; j < regions[0].length; j++) {
+                regionSize = Math.max(regionSize, region[j]);
             }
         }
         return regionSize;
