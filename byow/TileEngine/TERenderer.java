@@ -25,6 +25,11 @@ public class TERenderer {
     private int xOffset;
     private int yOffset;
 
+    private static final int WINDOW_WIDTH = 1280;
+    private static final int WINDOW_HEIGHT = 720;
+
+    private Font tileFont;
+
     /**
      * 和另一个 initialize 方法功能相同。
      *
@@ -56,27 +61,31 @@ public class TERenderer {
         this.xOffset = xOff;
         this.yOffset = yOff;
 
-        // 设置实际窗口大小：
-        // 每一个 tile 占 16 × 16 像素
-        StdDraw.setCanvasSize(width * TILE_SIZE, height * TILE_SIZE);
+        // 固定画布的像素尺寸
+        StdDraw.setCanvasSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // 设置绘制字符时使用的字体
-        Font font = new Font("Monaco", Font.BOLD, TILE_SIZE - 2);
-        StdDraw.setFont(font);
+        // 每个坐标单位对应多少像素，取较小值以容纳完整绘制区域
+        double pixelsPerTile = Math.min(
+                (double) WINDOW_WIDTH / width,
+                (double) WINDOW_HEIGHT / height
+        );
 
-        // 设置坐标系：
-        // x 范围为 0 ~ width
-        // y 范围为 0 ~ height
-        StdDraw.setXscale(0, width);
-        StdDraw.setYscale(0, height);
+        // 保持地块为正方形，多余的空间在两侧或上下均分
+        double paddingX =
+                (WINDOW_WIDTH / pixelsPerTile - width) / 2;
+        double paddingY =
+                (WINDOW_HEIGHT / pixelsPerTile - height) / 2;
 
-        // 将背景清空为黑色
-        StdDraw.clear(new Color(0, 0, 0));
+        StdDraw.setXscale(-paddingX, width + paddingX);
+        StdDraw.setYscale(-paddingY, height + paddingY);
 
-        // 开启双缓冲，避免绘制过程中出现闪烁
+        int fontSize = Math.max(
+                1, (int) Math.round(pixelsPerTile * 0.85)
+        );
+        tileFont = new Font("Monospaced", Font.BOLD, fontSize);
+
         StdDraw.enableDoubleBuffering();
-
-        // 显示当前绘制内容
+        StdDraw.clear(Color.BLACK);
         StdDraw.show();
     }
 

@@ -11,8 +11,8 @@ import byow.TileEngine.TETile;
 public class WorldRender {
 
     /** 游戏世界的宽度和高度 */
-    public static final int WIDTH = 101;
-    public static final int HEIGHT = 61;
+    public static final int WIDTH = 51;
+    public static final int HEIGHT = 31;
 
     /** 底层地图渲染器。 */
     private final TERenderer ter = new TERenderer();
