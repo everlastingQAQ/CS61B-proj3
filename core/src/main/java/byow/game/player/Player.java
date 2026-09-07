@@ -1,6 +1,7 @@
 package byow.game.player;
 
 import byow.game.tile.TETile;
+import byow.game.tile.TileRules;
 import byow.game.tile.Tileset;
 
 import java.util.Random;
@@ -13,7 +14,7 @@ import java.util.Random;
  * 玩家行为
  * 1. W A S D移动, 并改变世界(包括改变当前站的位置的板块和还原上一步的板块)
  * 2. 获取当前横纵坐标的函数
- * @author icovo
+ * @author icovo everlasting
  */
 
 public class Player {
@@ -32,15 +33,13 @@ public class Player {
      */
     public Player(TETile[][] world, Random random) {
         // 随机在[min,max]范围生成当前玩家的位置,横坐标[1, WIDTH],纵坐标[1,HEIGHT]
-        int maxWidth = world.length - 1, minWidth = 1;
-        int maxHeight = world[0].length - 1, minHeight = 1;
-        int originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
-        int originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
+        int originX = random.nextInt(1, world.length - 1);
+        int originY = random.nextInt(1, world[0].length - 1);
 
         // 判断当前位置是否玩家可通行,如果不可以再次随机一个
         while (!isPlaceWalkable(world, originX, originY)) {
-            originX = random.nextInt(maxWidth - minWidth + 1) + minWidth;
-            originY = random.nextInt(maxHeight - minHeight + 1) + minHeight;
+            originX = random.nextInt(1, world.length - 1);
+            originY = random.nextInt(1, world[0].length - 1);
         }
 
         // 设定玩家初始位置
@@ -65,21 +64,20 @@ public class Player {
     /**
      * 判断可以走的位置
      * @param world 传入当前世界
-     * @param width 判断的位置横坐标
-     * @param height 判断的位置纵坐标
+     * @param x 判断的位置横坐标
+     * @param y 判断的位置纵坐标
      * @return 位置是否可走
      * 是否可走判断:
      * 1. 越界不可以走(最外层算墙壁,不合理)
      * 2. UNLOCKED_DOOR 可走
      * 3. FLOOR 可走
      */
-    private boolean isPlaceWalkable(TETile[][] world, int width, int height) {
-        if (width < 1 || width >= world.length - 1 || height < 1 || height >= world[0].length - 1) {
+    private boolean isPlaceWalkable(TETile[][] world, int x, int y) {
+        if (x < 1 || x >= world.length - 1 || y < 1 || y >= world[0].length - 1) {
             return false;
         }
 
-        return world[width][height].equals(Tileset.OPEN_DOOR)
-            || world[width][height].equals(Tileset.FLOOR);
+        return TileRules.isWalkable(world[x][y]);
     }
 
     /**
