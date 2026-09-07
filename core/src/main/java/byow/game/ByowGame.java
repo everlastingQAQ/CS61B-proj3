@@ -4,6 +4,7 @@ import byow.game.render.TileRenderer;
 import byow.game.render.WorldRenderer;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
+import byow.game.worldGenerator.WorldGenerator;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -45,7 +46,7 @@ public class ByowGame extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(0, 0, 0, 1);
 
-//        worldRenderer.render();
+//        worldRenderer.render(world);
     }
 
     @Override
