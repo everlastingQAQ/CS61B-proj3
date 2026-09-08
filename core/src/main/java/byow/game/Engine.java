@@ -41,6 +41,9 @@ public class Engine {
 
     private boolean quitAfterSave;
 
+    /** 是否请求退出游戏 */
+    private boolean shouldQuit = false;
+
     /**
      * 根据不同的游戏状态分别处理输入
      * */
@@ -55,7 +58,6 @@ public class Engine {
             case LOAD -> handleLoadInput(c);
             case PAUSE -> handlePauseInput(c);
             case SAVE -> handleSaveInput(c);
-            case QUIT -> handleQuitInput(c);
         }
     }
 
@@ -75,10 +77,7 @@ public class Engine {
                 state = GameState.SEED;
             }
             case 'L' -> state = GameState.LOAD;
-            case 'Q' -> {
-                state = GameState.QUIT;
-//                quit();
-            }
+            case 'Q' -> quit();
         }
     }
 
@@ -141,7 +140,7 @@ public class Engine {
         int slot = Character.getNumericValue(c);
         saveGame(slot);
         if (quitAfterSave) {
-            state = GameState.QUIT;
+            quit();
         } else {
             state = GameState.PAUSE;
         }
@@ -177,7 +176,7 @@ public class Engine {
 
         if (colonPressed) {
             if (c == 'Q') {
-                state = GameState.QUIT;
+                quit();
                 return;
             }
             colonPressed = false;
@@ -223,6 +222,12 @@ public class Engine {
         saveManager.save(slot, gameSave);
     }
 
+    /**
+     * 退出游戏
+     * */
+    private void quit() {
+        shouldQuit = true;
+    }
 
     public GameState state() {
         return state;
@@ -238,6 +243,10 @@ public class Engine {
 
     public String seedString() {
         return seedString.toString();
+    }
+
+    public boolean shouldQuit() {
+        return shouldQuit;
     }
 
 }

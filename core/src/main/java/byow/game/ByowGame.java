@@ -42,6 +42,12 @@ public class ByowGame extends ApplicationAdapter {
 
     @Override
     public void render() {
+
+        if (engine.shouldQuit()) {
+            Gdx.app.exit();
+            return;
+        }
+
         ScreenUtils.clear(0, 0, 0, 1);
         gameRenderer.render(engine);
     }

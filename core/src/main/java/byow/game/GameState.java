@@ -6,6 +6,5 @@ public enum GameState {
     LOAD,
     PLAYING,
     PAUSE,
-    SAVE,
-    QUIT
+    SAVE
 }

@@ -20,18 +20,9 @@ public class GameRenderer {
 
     public void render(Engine engine) {
         switch (engine.state()) {
-            case MENU -> {
-                menuRenderer.render();
-            }
-            case SEED -> {
-                seedRenderer.render(engine.seedString());
-            }
-            case PLAYING -> {
-                worldRenderer.render(engine.world());
-            }
-            case QUIT -> {
-
-            }
+            case MENU -> menuRenderer.render();
+            case SEED -> seedRenderer.render(engine.seedString());
+            case PLAYING -> worldRenderer.render(engine.world());
         }
     }
 }
