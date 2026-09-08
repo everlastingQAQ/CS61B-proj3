@@ -1,13 +1,13 @@
 package byow.game;
 
 import byow.game.player.Player;
+import byow.game.random.GameRandom;
 import byow.game.save.GameSave;
 import byow.game.save.PlayerData;
 import byow.game.save.SaveManager;
 import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
-import com.badlogic.gdx.Game;
 
 import java.util.Random;
 
@@ -28,7 +28,7 @@ public class Engine {
     private long seed;
 
     /** 随机种子生成的随机数生成器。 */
-    private Random random;
+    private GameRandom random;
 
     /** 当前游戏所处的状态。 */
     private GameState state = GameState.MENU;
@@ -39,6 +39,7 @@ public class Engine {
     /** 是否检测到保存退出的冒号 */
     private boolean colonPressed = false;
 
+    /** 保存之后是否退出 */
     private boolean quitAfterSave;
 
     /** 是否请求退出游戏 */
@@ -58,6 +59,7 @@ public class Engine {
             case LOAD -> handleLoadInput(c);
             case PAUSE -> handlePauseInput(c);
             case SAVE -> handleSaveInput(c);
+            case CONFIRM_QUIT -> handleConfirmQuitInput(c);
         }
     }
 
@@ -100,10 +102,6 @@ public class Engine {
         }
     }
 
-    private void handleQuitInput(char c) {
-
-    }
-
     /**
      * 在输入完种子后初始化世界
      * */
@@ -112,7 +110,7 @@ public class Engine {
         this.seed = Long.parseLong(seedString.toString());
 
         // 床架随机数
-        random = new Random(seed);
+        random = new GameRandom(seed);
 
         // 创建世界
         world = WorldGenerator.generate(seed);
@@ -128,6 +126,10 @@ public class Engine {
      * 处理加载存档时的输入
      * */
     private void handleLoadInput(char c) {
+        if (c < '1' || c > '5') {
+            return;
+        }
+
         int slot = Character.getNumericValue(c);
         loadGame(slot);
         state = GameState.PLAYING;
@@ -137,6 +139,10 @@ public class Engine {
      * 处理保存时的输入
      * */
     private void handleSaveInput(char c) {
+        if (c < '1' || c > '5') {
+            return;
+        }
+
         int slot = Character.getNumericValue(c);
         saveGame(slot);
         if (quitAfterSave) {
@@ -146,6 +152,9 @@ public class Engine {
         }
     }
 
+    /**
+     * 处理暂停时的输入
+     * */
     private void handlePauseInput(char c) {
         switch(c) {
             case 'P' -> state = GameState.PLAYING;
@@ -154,12 +163,27 @@ public class Engine {
                 state = GameState.SAVE;
             }
             case 'Q' -> {
-                quitAfterSave = true;
-                state = GameState.MENU;
+                state = GameState.CONFIRM_QUIT;
             }
 
         }
     }
+
+    /**
+     * 处理确认是否退出时的输入
+     * */
+    private void handleConfirmQuitInput(char c) {
+        switch(c) {
+            case 'Y' -> {
+                quitAfterSave = true;
+                state = GameState.SAVE;
+            }
+            case 'N' -> {
+                quit();
+            }
+        }
+    }
+
 
     /**
      * 处理游戏进行状态下的输入。
@@ -176,7 +200,7 @@ public class Engine {
 
         if (colonPressed) {
             if (c == 'Q') {
-                quit();
+                state = GameState.CONFIRM_QUIT;
                 return;
             }
             colonPressed = false;
@@ -187,8 +211,10 @@ public class Engine {
             case 'A' -> player.moveLeft(world);
             case 'S' -> player.moveDown(world);
             case 'D' -> player.moveRight(world);
+            case 'P' -> state = GameState.PAUSE;
         }
     }
+
 
     /**
      * 根据存档加载游戏
@@ -198,7 +224,7 @@ public class Engine {
         GameSave gamesave = saveManager.load(slot);
 
         // 加载随机数
-        this.random = gamesave.random();
+        this.random = gamesave.randomState();
 
         // 加载世界
         this.world = toTETile(gamesave.worldData().world());
@@ -206,6 +232,7 @@ public class Engine {
         // 加载人物
         this.player = new Player(world, gamesave.playerData().x(), gamesave.playerData().y());
     }
+
 
     /**
      * 保存游戏于对应存档位中
@@ -217,10 +244,11 @@ public class Engine {
                 player.x(),
                 player.y()
             ),
-            random
+            random.state()
             );
         saveManager.save(slot, gameSave);
     }
+
 
     /**
      * 退出游戏

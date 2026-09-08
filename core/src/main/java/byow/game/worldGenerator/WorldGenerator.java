@@ -1,5 +1,6 @@
 package byow.game.worldGenerator;
 
+import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 
@@ -8,7 +9,6 @@ import static byow.game.GameConfig.WORLD_WIDTH;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * 负责生成完整的游戏世界。
@@ -25,7 +25,7 @@ public class WorldGenerator {
 
     public static TETile[][] generate(long seed) {
 
-        Random random = new Random(seed);
+        GameRandom random = new GameRandom(seed);
         TETile[][] world = new TETile[WORLD_WIDTH][WORLD_HEIGHT];
         int[][] regions = new int[WORLD_WIDTH][WORLD_HEIGHT];
         List<Room> rooms = new ArrayList<>();

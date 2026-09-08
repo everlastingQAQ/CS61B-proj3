@@ -1,11 +1,11 @@
 package byow.game.worldGenerator;
 
+import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Stack;
 
 /**
@@ -31,7 +31,7 @@ import java.util.Stack;
 
 public class MazeGenerator {
     private final TETile[][] world;
-    private final Random random;
+    private final GameRandom random;
     private final int[][] regions;
     private int regionSize;
 
@@ -39,7 +39,7 @@ public class MazeGenerator {
     private final int HEIGHT;
 
     // 初始化世界 和 随机种子 和 连通快标记 和 连通块数目
-    public MazeGenerator(TETile[][] world, Random random, int[][] regions, int regionSize) {
+    public MazeGenerator(TETile[][] world, GameRandom random, int[][] regions, int regionSize) {
         this.world = world;
         this.random = random;
         this.regions = regions;

@@ -1,5 +1,6 @@
 package byow.game.player;
 
+import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.TileRules;
 import byow.game.tile.Tileset;
@@ -31,7 +32,7 @@ public class Player {
      * @param world 传入游戏界面
      * @param random 传入种子生成的随机数
      */
-    public Player(TETile[][] world, Random random) {
+    public Player(TETile[][] world, GameRandom random) {
         // 随机在[min,max]范围生成当前玩家的位置,横坐标[1, WIDTH],纵坐标[1,HEIGHT]
         int originX = random.nextInt(1, world.length - 1);
         int originY = random.nextInt(1, world[0].length - 1);

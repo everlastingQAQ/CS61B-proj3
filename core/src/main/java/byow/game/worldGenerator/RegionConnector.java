@@ -1,5 +1,6 @@
 package byow.game.worldGenerator;
 
+import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 
@@ -17,7 +18,7 @@ import static java.util.Collections.shuffle;
  * 必要的连接点一定会被打开，同时以较小概率打开额外连接点，
  * 从而在地图中产生少量环路。</p>
  *
- * <p>通过 {@link #connect(TETile[][], int[][], Random)}
+ * <p>通过 {@link #connect(TETile[][], int[][], GameRandom)}
  * 方法连接地图。</p>
  *
  * @author everlasting
@@ -55,7 +56,7 @@ public class RegionConnector {
      * @param regions    每个格子所属的区域编号，0 表示不属于任何区域
      * @param random     随机数生成器
      */
-    public void connect(TETile[][] world, int[][] regions, Random random) {
+    public void connect(TETile[][] world, int[][] regions, GameRandom random) {
 
         this.WIDTH = world.length;
         this.HEIGHT = world[0].length;
@@ -64,7 +65,7 @@ public class RegionConnector {
         // 统计可能会变成门的格子
         updatePos(world, regions);
 
-        shuffle(connectorPositions, random);
+        random.shuffle(connectorPositions);
 
         int regionSize = getRegionSize(regions);
         DSU dsu = new DSU(regionSize + 1);

@@ -1,8 +1,9 @@
 package byow.game.tile;
 
+import byow.game.random.GameRandom;
+
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * 表示地图中的一个图块，并保存图块数据。
@@ -107,7 +108,7 @@ public class TETile {
     private static int newColorValue(
         int v,
         int dv,
-        Random r) {
+        GameRandom r) {
 
         int rawNewValue =
             v + r.nextInt(-dv, dv + 1);

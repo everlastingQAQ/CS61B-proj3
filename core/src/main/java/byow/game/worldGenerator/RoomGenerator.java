@@ -1,15 +1,15 @@
 package byow.game.worldGenerator;
 
+import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * 用于在地图中随机生成并放置互不重叠的矩形房间。
  *
- * <p>通过 {@link #generate(TETile[][], int[][], List<Room>, Random)} 方法生成房间。</p>
+ * <p>通过 {@link #generate(TETile[][], int[][], List<Room>, GameRandom)} 方法生成房间。</p>
  *
  * @author everlasting
  * */
@@ -33,7 +33,7 @@ public class RoomGenerator {
      * @param rooms 记录房间的位置和大小
      * @param random 随机数生成器
      */
-    public void generate(TETile[][] world, int[][] regions, List<Room> rooms, Random random) {
+    public void generate(TETile[][] world, int[][] regions, List<Room> rooms, GameRandom random) {
         // 初始化地图的宽、高和覆盖情况
         this.width = world.length;
         this.height = world[0].length;
@@ -100,7 +100,7 @@ public class RoomGenerator {
      * @param max 最大值
      * @return [min, max] 范围内的随机奇数
      */
-    private static int randomOdd(Random random, int min, int max) {
+    private static int randomOdd(GameRandom random, int min, int max) {
         int count = (max - min) / 2 + 1;
         return min + 2 * random.nextInt(count);
     }
