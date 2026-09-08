@@ -44,7 +44,6 @@ public class ByowGame extends ApplicationAdapter {
     public void render() {
 
         if (engine.shouldQuit()) {
-            dispose();
             Gdx.app.exit();
             return;
         }

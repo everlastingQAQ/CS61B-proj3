@@ -15,9 +15,13 @@ public class GameRandom {
      * 返回 [0, bound) 的随机整数
      */
     public int nextInt(int bound) {
+        if (bound <= 0) {
+            throw new IllegalArgumentException("bound must be positive");
+        }
+
         state = state * 6364136223846793005L + 1442695040888963407L;
         long value = state >>> 32;
-        return (int)(Math.abs(value) % bound);
+        return (int) (value % bound);
     }
 
     public long state() {

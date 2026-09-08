@@ -106,8 +106,12 @@ public class Engine {
      * 在输入完种子后初始化世界
      * */
     private void initNewWorld() {
-        // 创建 seed
-        this.seed = Long.parseLong(seedString.toString());
+
+        try {
+            seed = Long.parseLong(seedString.toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
 
         // 床架随机数
         random = new GameRandom(seed);
@@ -129,8 +133,10 @@ public class Engine {
         if (c < '1' || c > '5') {
             return;
         }
-
         int slot = Character.getNumericValue(c);
+        if (!saveManager.exists(slot)) {
+            return; // TODO：保持 LOAD 状态，之后显示“该位置没有存档”
+        }
         loadGame(slot);
         state = GameState.PLAYING;
     }
@@ -224,7 +230,7 @@ public class Engine {
         GameSave gamesave = saveManager.load(slot);
 
         // 加载随机数
-        this.random = gamesave.randomState();
+        this.random = new GameRandom(gamesave.randomState());
 
         // 加载世界
         this.world = toTETile(gamesave.worldData().world());
