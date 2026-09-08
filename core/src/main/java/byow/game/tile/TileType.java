@@ -1,6 +1,7 @@
 package byow.game.tile;
 
 public enum TileType {
+    AVATAR,
     WALL,
     FLOOR,
     NOTHING,

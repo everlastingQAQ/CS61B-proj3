@@ -1,21 +1,11 @@
 package byow.game.save;
 
-import byow.game.render.WorldRenderer;
-import byow.game.tile.TETile;
+import byow.game.tile.TileType;
 
 /**
  * 保存 World 的相关数据
  *
  * @author everlasting
- * */
-public class WorldData {
-    private final TETile[][] world;
-
-    public WorldData(TETile[][] world) {
-        this.world = world;
-    }
-
-    public TETile[][] world() {
-        return world;
-    }
-}
+ *
+ */
+public record WorldData(TileType[][] world) {}

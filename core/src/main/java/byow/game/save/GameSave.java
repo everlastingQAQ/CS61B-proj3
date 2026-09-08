@@ -1,6 +1,7 @@
 package byow.game.save;
 
-public class GameSave {
-
-    
-}
+public record GameSave(
+    WorldData worldData,
+    PlayerData playerData,
+    long seed
+) {}
