@@ -42,9 +42,36 @@ public class Player {
             originY = random.nextInt(1, world[0].length - 1);
         }
 
+        // 初始化世界
+        init(world, originX, originY);
+    }
+
+    /**
+     * 加载玩家
+     *
+     * @param x 玩家的横坐标
+     * @param y 玩家的纵坐标
+     * @param world 玩家的世界
+     */
+    public Player(TETile[][] world, int x, int y) {
+        if (!isPlaceWalkable(world, x, y)) {
+            throw new IllegalArgumentException(
+                "Player position is not walkable"
+            );
+        }
+
+        init(world, x, y);
+    }
+
+    /**
+     * 初始化玩家状态
+     * 1. 设定玩家初始位置
+     * 2. 改变游戏界面,并记录此板块样式
+     */
+    private void init(TETile[][] world, int x, int y) {
         // 设定玩家初始位置
-        x = originX;
-        y = originY;
+        this.x = x;
+        this.y = y;
 
         // 改变游戏界面,并记录此板块样式
         lastPositionType = world[x][y];

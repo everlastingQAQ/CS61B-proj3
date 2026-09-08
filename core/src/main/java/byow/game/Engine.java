@@ -1,10 +1,15 @@
 package byow.game;
 
 import byow.game.player.Player;
+import byow.game.save.GameSave;
+import byow.game.save.SaveManager;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
 
 import java.util.Random;
+
+import static byow.game.tile.TileConverter.toTETile;
+import static byow.game.tile.TileConverter.toTileType;
 
 public class Engine {
     /** 当前游戏世界。 */
@@ -16,11 +21,20 @@ public class Engine {
     /** 用于暂存用户输入的新世界随机种子。 */
     private final StringBuilder seedString = new StringBuilder();
 
+    /** 当前世界随机种子 */
+    private long seed;
+
     /** 随机种子生成的随机数生成器。 */
     private Random random;
 
     /** 当前游戏所处的状态。 */
     private GameState state = GameState.MENU;
+
+    /** 游戏存档管理器 */
+    private final SaveManager saveManager = new SaveManager();
+
+    /** 是否检测到保存退出的冒号 */
+    private boolean colonPressed = false;
 
     /**
      * 根据不同的游戏状态分别处理输入
@@ -33,8 +47,8 @@ public class Engine {
             case MENU -> handleMenuInput(c);
             case SEED -> handleSeedInput(c);
             case PLAYING -> handlePlayingInput(c);
-            case QUIT -> {
-            }
+            case LOAD -> handleLoadInput(c);
+            case QUIT -> handleQuitInput(c);
         }
     }
 
@@ -53,13 +67,10 @@ public class Engine {
                 seedString.setLength(0);
                 state = GameState.SEED;
             }
-
-            case 'L' -> {
-                // TODO load game
-            }
-
+            case 'L' -> state = GameState.LOAD;
             case 'Q' -> {
                 state = GameState.QUIT;
+//                quit();
             }
         }
     }
@@ -74,22 +85,47 @@ public class Engine {
      */
     private void handleSeedInput(char c) {
         if (c == 'S') {
-            long seed = Long.parseLong(seedString.toString());
-
-            random = new Random(seed);
-
-            world = WorldGenerator.generate(seed);
-
-            player = new Player(world, random);
-
-            state = GameState.PLAYING;
-
+            initNewWorld();
             return;
         }
 
         if (Character.isDigit(c)) {
             seedString.append(c);
         }
+    }
+
+    private void handleQuitInput(char c) {
+        int slot = Character.getNumericValue(c);
+
+    }
+
+    /**
+     * 在输入完种子后初始化世界
+     * */
+    private void initNewWorld() {
+        // 创建 seed
+        this.seed = Long.parseLong(seedString.toString());
+
+        // 床架随机数
+        random = new Random(seed);
+
+        // 创建世界
+        world = WorldGenerator.generate(seed);
+
+        // 创建人物
+        player = new Player(world, random);
+
+        // 更改游戏状态
+        state = GameState.PLAYING;
+    }
+
+    /**
+     * 处理加载存档时的输入
+     * */
+    private void handleLoadInput(char c) {
+        int slot = Character.getNumericValue(c);
+        loadGame(slot);
+        state = GameState.PLAYING;
     }
 
     /**
@@ -99,19 +135,43 @@ public class Engine {
      * @param c 用户输入的字符
      */
     private void handlePlayingInput(char c) {
-        switch (c) {
-            case 'W' ->
-                player.moveUp(world);
 
-            case 'A' ->
-                player.moveLeft(world);
-
-            case 'S' ->
-                player.moveDown(world);
-
-            case 'D' ->
-                player.moveRight(world);
+        if (c == ':') {
+            colonPressed = true;
+            return;
         }
+
+        if (colonPressed) {
+            if (c == 'Q') {
+                state = GameState.QUIT;
+                return;
+            }
+            colonPressed = false;
+        }
+
+        switch (c) {
+            case 'W' -> player.moveUp(world);
+            case 'A' -> player.moveLeft(world);
+            case 'S' -> player.moveDown(world);
+            case 'D' -> player.moveRight(world);
+        }
+    }
+
+    /**
+     * 根据存档加载游戏
+     * */
+    private void loadGame(int slot) {
+        // 加载 gamesave
+        GameSave gamesave = saveManager.load(slot);
+
+        // 加载随机数
+        this.random = new Random(seed);
+
+        // 加载世界
+        this.world = toTETile(gamesave.worldData().world());
+
+        // 加载人物
+        this.player = new Player(world, gamesave.playerData().x(), gamesave.playerData().y());
     }
 
 
