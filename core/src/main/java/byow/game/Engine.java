@@ -2,9 +2,12 @@ package byow.game;
 
 import byow.game.player.Player;
 import byow.game.save.GameSave;
+import byow.game.save.PlayerData;
 import byow.game.save.SaveManager;
+import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
+import com.badlogic.gdx.Game;
 
 import java.util.Random;
 
@@ -36,6 +39,8 @@ public class Engine {
     /** 是否检测到保存退出的冒号 */
     private boolean colonPressed = false;
 
+    private boolean quitAfterSave;
+
     /**
      * 根据不同的游戏状态分别处理输入
      * */
@@ -48,6 +53,8 @@ public class Engine {
             case SEED -> handleSeedInput(c);
             case PLAYING -> handlePlayingInput(c);
             case LOAD -> handleLoadInput(c);
+            case PAUSE -> handlePauseInput(c);
+            case SAVE -> handleSaveInput(c);
             case QUIT -> handleQuitInput(c);
         }
     }
@@ -95,7 +102,6 @@ public class Engine {
     }
 
     private void handleQuitInput(char c) {
-        int slot = Character.getNumericValue(c);
 
     }
 
@@ -126,6 +132,34 @@ public class Engine {
         int slot = Character.getNumericValue(c);
         loadGame(slot);
         state = GameState.PLAYING;
+    }
+
+    /**
+     * 处理保存时的输入
+     * */
+    private void handleSaveInput(char c) {
+        int slot = Character.getNumericValue(c);
+        saveGame(slot);
+        if (quitAfterSave) {
+            state = GameState.QUIT;
+        } else {
+            state = GameState.PAUSE;
+        }
+    }
+
+    private void handlePauseInput(char c) {
+        switch(c) {
+            case 'P' -> state = GameState.PLAYING;
+            case 'S' -> {
+                quitAfterSave = false;
+                state = GameState.SAVE;
+            }
+            case 'Q' -> {
+                quitAfterSave = true;
+                state = GameState.MENU;
+            }
+
+        }
     }
 
     /**
@@ -165,13 +199,28 @@ public class Engine {
         GameSave gamesave = saveManager.load(slot);
 
         // 加载随机数
-        this.random = new Random(seed);
+        this.random = gamesave.random();
 
         // 加载世界
         this.world = toTETile(gamesave.worldData().world());
 
         // 加载人物
         this.player = new Player(world, gamesave.playerData().x(), gamesave.playerData().y());
+    }
+
+    /**
+     * 保存游戏于对应存档位中
+     * */
+    private void saveGame(int slot) {
+        GameSave gameSave = new GameSave(
+            new WorldData(toTileType(world)),
+            new PlayerData(
+                player.x(),
+                player.y()
+            ),
+            random
+            );
+        saveManager.save(slot, gameSave);
     }
 
 

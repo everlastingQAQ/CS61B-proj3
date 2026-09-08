@@ -5,5 +5,7 @@ public enum GameState {
     SEED,
     LOAD,
     PLAYING,
+    PAUSE,
+    SAVE,
     QUIT
 }
