@@ -5,8 +5,6 @@ import byow.game.tile.TETile;
 import byow.game.tile.TileRules;
 import byow.game.tile.Tileset;
 
-import java.util.Random;
-
 /**
  * 玩家属性
  * 1. 当前位置横坐标

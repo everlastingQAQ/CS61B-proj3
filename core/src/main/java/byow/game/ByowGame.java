@@ -2,16 +2,8 @@ package byow.game;
 
 import byow.game.input.GameInputProcessor;
 import byow.game.render.GameRenderer;
-import byow.game.render.MenuRenderer;
-import byow.game.render.TileRenderer;
-import byow.game.render.WorldRenderer;
-import byow.game.tile.TETile;
-import byow.game.tile.Tileset;
-import byow.game.worldGenerator.WorldGenerator;
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;

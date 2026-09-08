@@ -2,6 +2,7 @@ package byow.game.input;
 
 import byow.game.Engine;
 import com.badlogic.gdx.InputAdapter;
+
 public class GameInputProcessor extends InputAdapter {
 
     private Engine engine;

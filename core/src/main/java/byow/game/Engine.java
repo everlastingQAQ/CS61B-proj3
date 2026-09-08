@@ -9,8 +9,6 @@ import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
 
-import java.util.Random;
-
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
 

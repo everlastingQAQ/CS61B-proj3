@@ -7,7 +7,6 @@ import byow.game.tile.Tileset;
 import java.util.*;
 
 import static byow.game.worldGenerator.WorldGenerator.getRegionSize;
-import static java.util.Collections.shuffle;
 
 /**
  * 用于连接地图中彼此独立的房间和迷宫区域，
