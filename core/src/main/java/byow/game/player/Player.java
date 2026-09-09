@@ -92,32 +92,37 @@ public class Player {
      * 2. 改变世界
      * 3. 更新坐标
      * @param world 游戏世界
+     * @return 返回是否移动成功
      */
-    public void moveUp(TETile[][] world) {
+    public boolean moveUp(TETile[][] world) {
         if (!isPlaceWalkable(world, x, y + 1)) {
-            return;
+            return false;
         }
         y++;
+        return true;
     }
 
-    public void moveDown(TETile[][] world) {
+    public boolean moveDown(TETile[][] world) {
         if (!isPlaceWalkable(world, x, y - 1)) {
-            return;
+            return false;
         }
         y--;
+        return true;
     }
 
-    public void moveLeft(TETile[][] world) {
+    public boolean moveLeft(TETile[][] world) {
         if (!isPlaceWalkable(world, x - 1, y)) {
-            return;
+            return false;
         }
         x--;
+        return true;
     }
 
-    public void moveRight(TETile[][] world) {
+    public boolean moveRight(TETile[][] world) {
         if (!isPlaceWalkable(world, x + 1, y)) {
-            return;
+            return false;
         }
         x++;
+        return true;
     }
 }

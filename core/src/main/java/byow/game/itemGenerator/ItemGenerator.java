@@ -25,6 +25,9 @@ public class ItemGenerator {
     public static List<Item> generate(TETile[][] world, Player player, GameRandom gameRandom) {
         List<Item> items = new ArrayList<>();
 
+        // 之后进行不放回随机抽取
+        List<ItemType> availableTypes = new ArrayList<>(List.of(ItemType.values()));
+
         while (items.size() < ITEM_NUMBER) {
             int x = gameRandom.nextInt(1, WORLD_WIDTH);
             int y = gameRandom.nextInt(1, WORLD_HEIGHT);
@@ -39,19 +42,35 @@ public class ItemGenerator {
                 continue;
             }
 
+            // 如果这个位置已经有过物品了, 不允许放置
+            if (hasItemAt(items, x, y)) {
+                continue;
+            }
+
             // 取得枚举数组
             ItemType[] types = ItemType.values();
 
             // 确定随机类型
-            int index = gameRandom.nextInt(types.length);
+            int index = gameRandom.nextInt(availableTypes.size());
 
             // 建立新Item
-            Item newItem = new Item(x, y, types[index]);
+            ItemType type = availableTypes.remove(index);
+            Item newItem = new Item(x, y, type);
 
             // 加入数组
             items.add(newItem);
         }
 
         return items;
+    }
+
+    // 判断在某个位置是否有物品
+    private static boolean hasItemAt(List<Item> items, int x, int y) {
+        for (Item item : items) {
+            if (item.x() == x && item.y() == y) {
+                return true;
+            }
+        }
+        return false;
     }
 }

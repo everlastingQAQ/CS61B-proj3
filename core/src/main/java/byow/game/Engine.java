@@ -4,10 +4,7 @@ import byow.game.item.Item;
 import byow.game.itemGenerator.ItemGenerator;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
-import byow.game.save.GameSave;
-import byow.game.save.PlayerData;
-import byow.game.save.SaveManager;
-import byow.game.save.WorldData;
+import byow.game.save.*;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
 
@@ -30,6 +27,9 @@ public class Engine {
 
     /** 当前游戏物品。 */
     private List<Item> items;
+
+    /** 当前拥有的物品数。 */
+    private int collectedCount;
 
     /** 用于暂存用户输入的新世界随机种子。 */
     private final StringBuilder seedString = new StringBuilder();
@@ -202,12 +202,47 @@ public class Engine {
      */
     private void handlePlayingInput(char c) {
 
-        switch (c) {
+        boolean moved = switch (c) {
             case 'W' -> player.moveUp(world);
             case 'A' -> player.moveLeft(world);
             case 'S' -> player.moveDown(world);
             case 'D' -> player.moveRight(world);
-            case 'P' -> state = GameState.PAUSE;
+            case 'P' -> {
+                state = GameState.PAUSE;
+                yield false;
+            }
+            default -> false;
+        };
+
+        if (moved) {
+            resolvePlayerInteractions();aaa
+        }
+    }
+
+    // =====================
+    // handle game interact
+    // =====================
+
+    // 处理人物交互
+    private void resolvePlayerInteractions() {
+        checkItemCollection();
+    }
+
+    // 处理物品收集
+    private void checkItemCollection() {
+        int x = player.x();
+        int y = player.y();
+
+        for (Item item : items) {
+            if (item.x() == x && item.y() == y) {
+                // 拾取
+                collectedCount++;
+
+                // 从地图中移除
+                items.remove(item);
+
+                // TODO: 产生效果
+            }
         }
     }
 
@@ -269,18 +304,47 @@ public class Engine {
 
         // 加载人物
         this.player = new Player(world, gamesave.playerData().x(), gamesave.playerData().y());
+
+        // 加载物品
+        this.items = new ArrayList<>();
+
+        for (ItemData data : gamesave.items()) {
+            this.items.add(
+                new Item(
+                    data.x(),
+                    data.y(),
+                    data.type()
+                )
+            );
+        }
     }
 
     /**
      * 保存游戏于对应存档位中
      * */
     private void saveGame(int slot) {
+        // 求物品的存档数组
+        List<ItemData> itemDataList = new ArrayList<>();
+
+        for (Item item : items) {
+            itemDataList.add(
+                new ItemData(
+                    item.x(),
+                    item.y(),
+                    item.type()
+                )
+            );
+        }
+
         GameSave gameSave = new GameSave(
             new WorldData(toTileType(world)),
             new PlayerData(
                 player.x(),
                 player.y()
             ),
+
+            itemDataList,
+
             random.state()
             );
         saveManager.save(slot, gameSave);
