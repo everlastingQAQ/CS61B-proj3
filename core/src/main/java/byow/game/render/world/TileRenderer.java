@@ -1,4 +1,4 @@
-package byow.game.render;
+package byow.game.render.world;
 
 import byow.game.tile.TETile;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

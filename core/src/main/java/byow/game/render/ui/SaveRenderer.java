@@ -1,78 +1,71 @@
-package byow.game.render;
+package byow.game.render.ui;
 
+import byow.game.render.FontManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import static byow.game.render.RenderUtils.drawCentered;
 
-public class SeedRenderer {
+public class SaveRenderer {
+
     private final SpriteBatch batch;
     private final BitmapFont titleFont;
     private final BitmapFont bodyFont;
-    private final ShapeRenderer shapeRenderer;
 
-    public SeedRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
+    public SaveRenderer(SpriteBatch batch, FontManager fonts) {
         this.batch = batch;
         this.titleFont = fonts.title();
         this.bodyFont = fonts.body();
-        this.shapeRenderer = shapeRenderer;
     }
 
-    public void render(String seed) {
-        float width = Gdx.graphics.getWidth();
+    public void render() {
         float height = Gdx.graphics.getHeight();
 
-        // 输入框
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(
-            width * 0.30f,
-            height * 0.43f,
-            width * 0.40f,
-            height * 0.12f
-        );
-
-        shapeRenderer.end();
-
-        // 文本
         batch.begin();
 
         titleFont.setColor(Color.WHITE);
-
         drawCentered(
             batch,
             titleFont,
-            "Enter a seed",
-            height * 0.70f
+            "SAVE GAME",
+            height * 0.82f
         );
 
         bodyFont.setColor(Color.WHITE);
-        drawCentered(
-            batch,
-            bodyFont,
-            seed,
-            height * 0.50f
-        );
+        for (int slot = 1; slot <= 5; slot++) {
+            drawCentered(
+                batch,
+                bodyFont,
+                "Slot " + slot + " (" + slot + ")",
+                height * (0.67f - (slot - 1) * 0.09f)
+            );
+        }
 
         bodyFont.setColor(Color.LIGHT_GRAY);
         drawCentered(
             batch,
             bodyFont,
-            "Press S to start",
-            height * 0.35f
+            "Press 1-5 to save",
+            height * 0.18f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Saving replaces the existing save in that slot.",
+            height * 0.11f
         );
 
         drawCentered(
             batch,
             bodyFont,
             "Back (B)",
-            height * 0.27f
+            height * 0.07f
         );
 
         batch.end();
     }
+
 }

@@ -1,70 +1,68 @@
-package byow.game.render;
+package byow.game.render.ui;
 
+import byow.game.render.FontManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import static byow.game.render.RenderUtils.drawCentered;
 
-public class MenuRenderer {
+public class LoadRenderer {
 
     private final SpriteBatch batch;
     private final BitmapFont titleFont;
     private final BitmapFont bodyFont;
-    private final ShapeRenderer shapeRenderer;
 
-    public MenuRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
+    public LoadRenderer(SpriteBatch batch, FontManager fonts) {
         this.batch = batch;
         this.titleFont = fonts.title();
         this.bodyFont = fonts.body();
-        this.shapeRenderer = shapeRenderer;
     }
 
     public void render() {
-        float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(0, 0, width, height);
-
-        shapeRenderer.end();
 
         batch.begin();
 
-        // 标题
         titleFont.setColor(Color.WHITE);
         drawCentered(
             batch,
             titleFont,
-            "CS61B: THE GAME",
-            height * 0.75f
+            "LOAD GAME",
+            height * 0.82f
         );
 
-        // 菜单
         bodyFont.setColor(Color.WHITE);
+        for (int slot = 1; slot <= 5; slot++) {
+            drawCentered(
+                batch,
+                bodyFont,
+                "Slot " + slot + " (" + slot + ")",
+                height * (0.67f - (slot - 1) * 0.09f)
+            );
+        }
+
+        bodyFont.setColor(Color.LIGHT_GRAY);
         drawCentered(
             batch,
             bodyFont,
-            "New Game (N)",
-            height * 0.50f
+            "Press 1-5 to load",
+            height * 0.20f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Load Game (L)",
-            height * 0.42f
+            "Empty slots cannot be loaded.",
+            height * 0.14f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Quit (Q)",
-            height * 0.34f
+            "Back (B)",
+            height * 0.08f
         );
 
         batch.end();

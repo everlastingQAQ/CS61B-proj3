@@ -1,70 +1,73 @@
-package byow.game.render;
+package byow.game.render.ui;
 
+import byow.game.render.FontManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import static byow.game.render.RenderUtils.drawCentered;
 
-public class SaveRenderer {
+public class MenuRenderer {
 
     private final SpriteBatch batch;
     private final BitmapFont titleFont;
     private final BitmapFont bodyFont;
+    private final ShapeRenderer shapeRenderer;
 
-    public SaveRenderer(SpriteBatch batch, FontManager fonts) {
+    public MenuRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
         this.batch = batch;
         this.titleFont = fonts.title();
         this.bodyFont = fonts.body();
+        this.shapeRenderer = shapeRenderer;
     }
 
     public void render() {
+        float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.rect(0, 0, width, height);
+
+        shapeRenderer.end();
 
         batch.begin();
 
+        // 标题
         titleFont.setColor(Color.WHITE);
         drawCentered(
             batch,
             titleFont,
-            "SAVE GAME",
-            height * 0.82f
+            "CS61B: THE GAME",
+            height * 0.75f
         );
 
+        // 菜单
         bodyFont.setColor(Color.WHITE);
-        for (int slot = 1; slot <= 5; slot++) {
-            drawCentered(
-                batch,
-                bodyFont,
-                "Slot " + slot + " (" + slot + ")",
-                height * (0.67f - (slot - 1) * 0.09f)
-            );
-        }
-
-        bodyFont.setColor(Color.LIGHT_GRAY);
         drawCentered(
             batch,
             bodyFont,
-            "Press 1-5 to save",
-            height * 0.18f
+            "New Game (N)",
+            height * 0.50f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Saving replaces the existing save in that slot.",
-            height * 0.11f
+            "Load Game (L)",
+            height * 0.42f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Back (B)",
-            height * 0.07f
+            "Quit (Q)",
+            height * 0.34f
         );
 
         batch.end();
     }
-
 }

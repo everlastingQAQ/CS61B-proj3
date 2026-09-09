@@ -1,15 +1,14 @@
-package byow.game.render;
+package byow.game.render.world;
 
 import byow.game.GameConfig;
 import byow.game.player.Player;
+import byow.game.render.FontManager;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
-import static byow.game.GameConfig.WORLD_WIDTH;
 
 /**
  * 负责渲染一个世界

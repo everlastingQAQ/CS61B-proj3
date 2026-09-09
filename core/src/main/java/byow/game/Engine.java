@@ -13,6 +13,11 @@ import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
 
 public class Engine {
+
+    // =====================
+    // Fields
+    // =====================
+
     /** 当前游戏世界。 */
     private TETile[][] world = null;
 
@@ -34,11 +39,16 @@ public class Engine {
     /** 游戏存档管理器 */
     private final SaveManager saveManager = new SaveManager();
 
-    /** 保存之后是否退出 */
+    /** 保存完成后是否返回主菜单。 */
     private boolean returnToMenuAfterSave;
 
     /** 是否请求退出游戏 */
     private boolean shouldQuit = false;
+
+
+    // =====================
+    // Public input entry
+    // =====================
 
     /**
      * 根据不同的游戏状态分别处理输入
@@ -57,6 +67,10 @@ public class Engine {
             case CONFIRM_QUIT -> handleConfirmQuitInput(c);
         }
     }
+
+    // =====================
+    // State input handlers
+    // =====================
 
     /**
      * 处理主菜单状态下的输入。
@@ -100,30 +114,6 @@ public class Engine {
         if (Character.isDigit(c)) {
             seedString.append(c);
         }
-    }
-
-    /**
-     * 在输入完种子后初始化世界
-     * */
-    private void initNewWorld() {
-
-        try {
-            seed = Long.parseLong(seedString.toString());
-        } catch (NumberFormatException e) {
-            return;
-        }
-
-        // 床架随机数
-        random = new GameRandom(seed);
-
-        // 创建世界
-        world = WorldGenerator.generate(seed);
-
-        // 创建人物
-        player = new Player(world, random);
-
-        // 更改游戏状态
-        state = GameState.PLAYING;
     }
 
     /**
@@ -197,7 +187,6 @@ public class Engine {
         }
     }
 
-
     /**
      * 处理游戏进行状态下的输入。
      * 后续将在这里处理玩家移动、保存游戏等操作。
@@ -215,6 +204,45 @@ public class Engine {
         }
     }
 
+    // =====================
+    // Game lifecycle
+    // =====================
+
+    /**
+     * 在输入完种子后初始化世界
+     * */
+    private void initNewWorld() {
+
+        try {
+            seed = Long.parseLong(seedString.toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        // 创建随机数
+        random = new GameRandom(seed);
+
+        // 创建世界
+        world = WorldGenerator.generate(seed);
+
+        // 创建人物
+        player = new Player(world, random);
+
+        // 更改游戏状态
+        state = GameState.PLAYING;
+    }
+
+    /**
+     * 退出游戏
+     * */
+    private void quit() {
+        shouldQuit = true;
+    }
+
+
+    // =====================
+    // Save / Load
+    // =====================
 
     /**
      * 根据存档加载游戏
@@ -233,7 +261,6 @@ public class Engine {
         this.player = new Player(world, gamesave.playerData().x(), gamesave.playerData().y());
     }
 
-
     /**
      * 保存游戏于对应存档位中
      * */
@@ -249,13 +276,9 @@ public class Engine {
         saveManager.save(slot, gameSave);
     }
 
-
-    /**
-     * 退出游戏
-     * */
-    private void quit() {
-        shouldQuit = true;
-    }
+    // =====================
+    // Getters
+    // =====================
 
     public GameState state() {
         return state;
