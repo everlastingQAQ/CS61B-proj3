@@ -215,7 +215,7 @@ public class Engine {
         };
 
         if (moved) {
-            resolvePlayerInteractions();aaa
+            resolvePlayerInteractions();
         }
     }
 
@@ -228,22 +228,34 @@ public class Engine {
         checkItemCollection();
     }
 
-    // 处理物品收集
+    // 处理是否收集到物品
     private void checkItemCollection() {
         int x = player.x();
         int y = player.y();
 
+        Item collectItem = null;
+
         for (Item item : items) {
             if (item.x() == x && item.y() == y) {
-                // 拾取
-                collectedCount++;
-
-                // 从地图中移除
-                items.remove(item);
-
-                // TODO: 产生效果
+                collectItem = item;
+                break;
             }
         }
+
+        if (collectItem != null) {
+            collectItem(collectItem);
+        }
+    }
+
+    // 收集物品
+    private void collectItem(Item item) {
+        // 拾取
+        collectedCount++;
+
+        // 从地图移除
+        items.remove(item);
+
+        // TODO: 产生效果
     }
 
     // =====================
