@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+// TODO 注释
 public class FontManager {
 
     private final BitmapFont titleFont;
@@ -62,12 +63,10 @@ public class FontManager {
 
         parameter.size = size;
 
-        parameter.characters =
-            FreeTypeFontGenerator.DEFAULT_CHARS
-                + "·≈❀█▢▒▲♠●";
+        parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "·≈❀█▢▒▲♠●";
 
-        parameter.minFilter = Texture.TextureFilter.Linear;
-        parameter.magFilter = Texture.TextureFilter.Linear;
+        parameter.minFilter = Texture.TextureFilter.Nearest;
+        parameter.magFilter = Texture.TextureFilter.Nearest;
 
         BitmapFont font = generator.generateFont(parameter);
 
