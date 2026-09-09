@@ -4,6 +4,7 @@ public class GameConfig {
     public static final int WORLD_WIDTH = 101;
     public static final int WORLD_HEIGHT = 61;
 
+    // 程序启动时默认窗口大小
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;
 

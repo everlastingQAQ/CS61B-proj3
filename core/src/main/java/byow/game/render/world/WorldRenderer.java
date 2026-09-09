@@ -9,6 +9,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
+
+import java.awt.*;
 
 /**
  * 负责渲染一个世界
@@ -48,7 +51,7 @@ public class WorldRenderer {
         this.tileSize = tileSize;
 
         // 初始化 camera 能看到多大的世界区域。
-        updateCameraViewport();
+        resize(GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT);
 
         this.tileRenderer = new TileRenderer(batch, fonts.tile(), shapeRenderer, tileSize);
     }
@@ -61,7 +64,7 @@ public class WorldRenderer {
     public void render(TETile[][] world, Player player) {
 
         // 镜头跟随玩家
-        updateCamera(player);
+        updateCamera(world, player);
 
         // 先画背景
         // 背景跟着 camera.combined 移动
@@ -93,11 +96,12 @@ public class WorldRenderer {
     }
 
     /**
-     * 设置 camera 的可视范围。
+     * 设置Camera属性, 改变窗口尺寸
+     * @param width 窗口尺寸
+     * @param height 窗口尺寸
      */
-    private void updateCameraViewport() {
-        // 获取窗口宽高比。
-        float aspectRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+    public void resize(int width, int height) {
+        float aspectRatio = (float)width / (float) height;
 
         // 设置 camera 纵向能够看到多少世界单位。
         camera.viewportHeight = GameConfig.CAMERA_VISIBLE_TILES_Y * tileSize;
@@ -112,13 +116,25 @@ public class WorldRenderer {
     /**
      * 根据玩家当前位置更新 camera。
      */
-    private void updateCamera(Player player) {
-        // 计算 tile 的中心位置
+    private void updateCamera(TETile[][] world, Player player) {
+        // 计算player所在中心位置
         float playerCenterX = (player.x() + 0.5f) * tileSize;
         float playerCenterY = (player.y() + 0.5f) * tileSize;
 
+        // 计算camera半宽
+        float halfWidth = camera.viewportWidth / 2;
+        float halfHeight = camera.viewportHeight / 2;
+
+        // 计算camera范围
+        float worldWidth = world.length * tileSize;
+        float worldHeight = world[0].length * tileSize;
+
+        // 限定camera真正的位置
+        float centerX = MathUtils.clamp(playerCenterX,halfWidth, worldWidth - halfWidth);
+        float centerY = MathUtils.clamp(playerCenterY, halfHeight, worldHeight - halfHeight);
+
         // 把 camera 的中心位置设置为玩家中心位置。
-        camera.position.set(playerCenterX, playerCenterY, 0);
+        camera.position.set(centerX, centerY, 0);
 
         // 更新 camera
         camera.update();

@@ -49,4 +49,14 @@ public class ByowGame extends ApplicationAdapter {
         shapeRenderer.dispose();
     }
 
+    /**
+     * 如果框架发现窗口resize, 自动调用 ByowGame.resize(newWidth, newHeight)
+     * @param width the new width in pixels
+     * @param height the new height in pixels
+     */
+    @Override
+    public void resize(int width, int height) {
+        gameRenderer.resize(width, height);
+    }
+
 }
