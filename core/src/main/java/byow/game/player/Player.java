@@ -38,8 +38,8 @@ public class Player {
             originY = random.nextInt(1, world[0].length - 1);
         }
 
-        // 初始化世界
-        init(originX, originY);
+        this.x = originX;
+        this.y = originY;
     }
 
     /**
@@ -55,17 +55,6 @@ public class Player {
                 "Player position is not walkable"
             );
         }
-
-        init(x, y);
-    }
-
-    /**
-     * 初始化玩家状态
-     * 1. 设定玩家初始位置
-     * 2. 改变游戏界面,并记录此板块样式
-     */
-    private void init(int x, int y) {
-        // 设定玩家初始位置
         this.x = x;
         this.y = y;
     }
@@ -99,28 +88,6 @@ public class Player {
         return TileRules.isWalkable(world[x][y]);
     }
 
-//    /**
-//     * 改变人物移动后的世界
-//     * 1. 还原用户当前站的位置的板块
-//     * 2. 更新 lastPositionType
-//     * 3. 改变用户下一步站的位置的板块
-//     * @param world 游戏世界
-//     * @param width 当前横坐标
-//     * @param height 当前纵坐标
-//     * @param nextWidth 下一步的横坐标
-//     * @param nextHeight 下一步的纵坐标
-//     */
-//    private void moveTo(TETile[][] world, int width, int height, int nextWidth, int nextHeight) {
-//        // 还原人物原来站的板块
-//        world[width][height] = lastPositionType;
-//
-//        // 更新lastPositionType
-//        lastPositionType = world[nextWidth][nextHeight];
-//
-//        // 更新用户现在站的板块
-//        world[nextWidth][nextHeight] = Tileset.AVATAR;
-//    }
-
     /**
      * 移动玩家:
      * 1. 判断能否移动
@@ -132,7 +99,6 @@ public class Player {
         if (!isPlaceWalkable(world, x, y + 1)) {
             return;
         }
-//        moveTo(world, x, y, x, y + 1);
         y++;
     }
 
@@ -140,7 +106,6 @@ public class Player {
         if (!isPlaceWalkable(world, x, y - 1)) {
             return;
         }
-//        moveTo(world, x, y, x, y - 1);
         y--;
     }
 
@@ -148,7 +113,6 @@ public class Player {
         if (!isPlaceWalkable(world, x - 1, y)) {
             return;
         }
-//        moveTo(world, x, y, x - 1, y);
         x--;
     }
 
@@ -156,7 +120,6 @@ public class Player {
         if (!isPlaceWalkable(world, x + 1, y)) {
             return;
         }
-//        moveTo(world, x, y, x + 1, y);
         x++;
     }
 }
