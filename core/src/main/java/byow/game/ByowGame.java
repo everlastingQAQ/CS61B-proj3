@@ -1,10 +1,10 @@
 package byow.game;
 
 import byow.game.input.GameInputProcessor;
+import byow.game.render.FontManager;
 import byow.game.render.GameRenderer;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class ByowGame extends ApplicationAdapter {
     private SpriteBatch batch;
-    private BitmapFont font;
+    private FontManager fonts;
     private ShapeRenderer shapeRenderer;
 
     private GameRenderer gameRenderer;
@@ -22,14 +22,12 @@ public class ByowGame extends ApplicationAdapter {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        font = new BitmapFont();
+        fonts = new FontManager();
         shapeRenderer = new ShapeRenderer();
         engine = new Engine();
-        gameRenderer = new GameRenderer(batch, font, shapeRenderer, GameConfig.getTileSize());
+        gameRenderer = new GameRenderer(batch, fonts, shapeRenderer, GameConfig.getTileSize());
 
-        Gdx.input.setInputProcessor(
-            new GameInputProcessor(engine)
-        );
+        Gdx.input.setInputProcessor(new GameInputProcessor(engine));
     }
 
     @Override
@@ -47,7 +45,7 @@ public class ByowGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        font.dispose();
+        fonts.dispose();
         shapeRenderer.dispose();
     }
 

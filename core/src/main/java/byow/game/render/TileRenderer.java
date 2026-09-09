@@ -19,11 +19,15 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
  * - toGdxColor 将板块的颜色转化成绘画颜色
  */
 public class TileRenderer {
+
     private final SpriteBatch batch;
-    private final BitmapFont font;
+    private final BitmapFont tileFont;
     private final ShapeRenderer shapeRenderer;
+
     private final float tileSize;
     private final float offsetX;
+
+    private final GlyphLayout layout = new GlyphLayout();
 
     /**
      * 初始化板块渲染器
@@ -39,7 +43,7 @@ public class TileRenderer {
                         float tileSize,
                         float offsetX) {
         this.batch = batch;
-        this.font = font;
+        this.tileFont = font;
         this.shapeRenderer = shapeRenderer;
         this.tileSize = tileSize;
         this.offsetX = offsetX;
@@ -73,24 +77,21 @@ public class TileRenderer {
         float px = x * tileSize;
         float py = y * tileSize;
 
-        // 设定字体尺寸
-        font.getData().setScale(1f);
-
         // 设定颜色
-        font.setColor(toGdxColor(tile.textColor()));
+        tileFont.setColor(toGdxColor(tile.textColor()));
 
         // 取得板块的字符
         String text = String.valueOf(tile.character());
 
         // 通过工具测量一段文字实际占多大空间
-        GlyphLayout layout = new GlyphLayout(font, text);
+        layout.setText(tileFont, text);
 
         // 居中计算: 容器起点 + (容器大小 - 内容大小) / 2
         float textX = px + (tileSize - layout.width) / 2f;
         float textY = py + (tileSize + layout.height) / 2f;
 
         // 通过 draw(batch, 字符, 字符开始绘画横坐标, 字符baseline纵坐标)
-        font.draw(batch, text, textX + offsetX, textY);
+        tileFont.draw(batch, text, textX + offsetX, textY);
     }
 
     // 将TETile的颜色转化成BitmapFont的颜色单位

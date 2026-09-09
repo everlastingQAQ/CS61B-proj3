@@ -6,14 +6,18 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class PauseRenderer {
-    private final SpriteBatch batch;
-    private final BitmapFont font;
-    private final GlyphLayout layout = new GlyphLayout();
+import static byow.game.render.RenderUtils.drawCentered;
 
-    public PauseRenderer(SpriteBatch batch, BitmapFont font) {
+public class PauseRenderer {
+
+    private final SpriteBatch batch;
+    private final BitmapFont titleFont;
+    private final BitmapFont bodyFont;
+
+    public PauseRenderer(SpriteBatch batch, FontManager fonts) {
         this.batch = batch;
-        this.font = font;
+        this.titleFont = fonts.title();
+        this.bodyFont = fonts.body();
     }
 
     public void render() {
@@ -21,21 +25,37 @@ public class PauseRenderer {
 
         batch.begin();
 
-        font.setColor(Color.WHITE);
-        font.getData().setScale(2.5f);
-        drawCentered("PAUSED", height * 0.75f);
+        titleFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            titleFont,
+            "PAUSED",
+            height * 0.75f
+        );
 
-        font.getData().setScale(1.5f);
-        drawCentered("Resume (P)", height * 0.52f);
-        drawCentered("Save Game (S)", height * 0.43f);
-        drawCentered("Quit (Q)", height * 0.34f);
+        bodyFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            bodyFont,
+            "Resume (P)",
+            height * 0.52f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Save Game (S)",
+            height * 0.43f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Quit (Q)",
+            height * 0.34f
+        );
 
         batch.end();
     }
 
-    private void drawCentered(String text, float y) {
-        layout.setText(font, text);
-        float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        font.draw(batch, layout, x, y);
-    }
 }

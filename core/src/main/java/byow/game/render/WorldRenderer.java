@@ -21,6 +21,7 @@ import static byow.game.GameConfig.WORLD_WIDTH;
  */
 
 public class WorldRenderer {
+
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
     private final TileRenderer tileRenderer;
@@ -41,7 +42,7 @@ public class WorldRenderer {
 
     public WorldRenderer(ShapeRenderer shapeRenderer,
                          SpriteBatch batch,
-                         BitmapFont font,
+                         FontManager fonts,
                          float tileSize) {
         this.shapeRenderer = shapeRenderer;
         this.batch = batch;
@@ -52,7 +53,7 @@ public class WorldRenderer {
         // 计算世界横向偏移量, 让世界水平居中
         float offsetX = (Gdx.graphics.getWidth() - worldPixelWidth) / 2f;
 
-        this.tileRenderer = new TileRenderer(batch, font, shapeRenderer, tileSize, offsetX);
+        this.tileRenderer = new TileRenderer(batch, fonts.tile(), shapeRenderer, tileSize, offsetX);
     }
 
     /**

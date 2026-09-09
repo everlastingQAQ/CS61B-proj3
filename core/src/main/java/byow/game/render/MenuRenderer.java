@@ -3,18 +3,25 @@ package byow.game.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import static byow.game.render.RenderUtils.drawCentered;
 
 public class MenuRenderer {
 
     private final SpriteBatch batch;
-    private final BitmapFont font;
+    private final BitmapFont titleFont;
+    private final BitmapFont bodyFont;
     private final ShapeRenderer shapeRenderer;
 
-    public MenuRenderer(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer) {
+    private final GlyphLayout layout = new GlyphLayout();
+
+    public MenuRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
         this.batch = batch;
-        this.font = font;
+        this.titleFont = fonts.title();
+        this.bodyFont = fonts.body();
         this.shapeRenderer = shapeRenderer;
     }
 
@@ -31,30 +38,37 @@ public class MenuRenderer {
 
         batch.begin();
 
-        font.setColor(Color.WHITE);
-
-        font.getData().setScale(2.5f);
-        font.draw(batch,
+        // 标题
+        titleFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            titleFont,
             "CS61B: THE GAME",
-            width * 0.37f,
-            height * 0.75f);
+            height * 0.75f
+        );
 
-        font.getData().setScale(1.5f);
-
-        font.draw(batch,
+        // 菜单
+        bodyFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            bodyFont,
             "New Game (N)",
-            width * 0.43f,
-            height * 0.50f);
+            height * 0.50f
+        );
 
-        font.draw(batch,
+        drawCentered(
+            batch,
+            bodyFont,
             "Load Game (L)",
-            width * 0.43f,
-            height * 0.42f);
+            height * 0.42f
+        );
 
-        font.draw(batch,
+        drawCentered(
+            batch,
+            bodyFont,
             "Quit (Q)",
-            width * 0.46f,
-            height * 0.34f);
+            height * 0.34f
+        );
 
         batch.end();
     }

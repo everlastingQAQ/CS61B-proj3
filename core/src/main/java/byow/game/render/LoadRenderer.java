@@ -6,14 +6,18 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class LoadRenderer {
-    private final SpriteBatch batch;
-    private final BitmapFont font;
-    private final GlyphLayout layout = new GlyphLayout();
+import static byow.game.render.RenderUtils.drawCentered;
 
-    public LoadRenderer(SpriteBatch batch, BitmapFont font) {
+public class LoadRenderer {
+
+    private final SpriteBatch batch;
+    private final BitmapFont titleFont;
+    private final BitmapFont bodyFont;
+
+    public LoadRenderer(SpriteBatch batch, FontManager fonts) {
         this.batch = batch;
-        this.font = font;
+        this.titleFont = fonts.title();
+        this.bodyFont = fonts.body();
     }
 
     public void render() {
@@ -21,30 +25,46 @@ public class LoadRenderer {
 
         batch.begin();
 
-        font.setColor(Color.WHITE);
-        font.getData().setScale(2.5f);
-        drawCentered("LOAD GAME", height * 0.82f);
+        titleFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            titleFont,
+            "LOAD GAME",
+            height * 0.82f
+        );
 
-        font.getData().setScale(1.5f);
-
+        bodyFont.setColor(Color.WHITE);
         for (int slot = 1; slot <= 5; slot++) {
             drawCentered(
+                batch,
+                bodyFont,
                 "Slot " + slot + " (" + slot + ")",
                 height * (0.67f - (slot - 1) * 0.09f)
             );
         }
 
-        font.setColor(Color.LIGHT_GRAY);
-        font.getData().setScale(1.2f);
-        drawCentered("Press 1-5 to load", height * 0.18f);
-        drawCentered("Empty slots cannot be loaded.", height * 0.11f);
+        bodyFont.setColor(Color.LIGHT_GRAY);
+        drawCentered(
+            batch,
+            bodyFont,
+            "Press 1-5 to load",
+            height * 0.18f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Empty slots cannot be loaded.",
+            height * 0.11f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Back (B)",
+            height * 0.10f
+        );
 
         batch.end();
-    }
-
-    private void drawCentered(String text, float y) {
-        layout.setText(font, text);
-        float x = (Gdx.graphics.getWidth() - layout.width) / 2f;
-        font.draw(batch, layout, x, y);
     }
 }

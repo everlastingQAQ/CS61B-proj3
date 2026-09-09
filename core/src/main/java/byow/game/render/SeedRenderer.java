@@ -1,18 +1,23 @@
 package byow.game.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import static byow.game.render.RenderUtils.drawCentered;
+
 public class SeedRenderer {
     private final SpriteBatch batch;
-    private final BitmapFont font;
+    private final BitmapFont titleFont;
+    private final BitmapFont bodyFont;
     private final ShapeRenderer shapeRenderer;
 
-    public SeedRenderer(SpriteBatch batch, BitmapFont font, ShapeRenderer shapeRenderer) {
+    public SeedRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
         this.batch = batch;
-        this.font = font;
+        this.titleFont = fonts.title();
+        this.bodyFont = fonts.body();
         this.shapeRenderer = shapeRenderer;
     }
 
@@ -35,23 +40,37 @@ public class SeedRenderer {
         // 文本
         batch.begin();
 
-        font.getData().setScale(2.2f);
-        font.draw(batch,
+        titleFont.setColor(Color.WHITE);
+
+        drawCentered(
+            batch,
+            titleFont,
             "Enter a seed",
-            width * 0.41f,
-            height * 0.70f);
+            height * 0.70f
+        );
 
-        font.getData().setScale(1.8f);
-        font.draw(batch,
+        bodyFont.setColor(Color.WHITE);
+        drawCentered(
+            batch,
+            bodyFont,
             seed,
-            width * 0.32f,
-            height * 0.50f);
+            height * 0.50f
+        );
 
-        font.getData().setScale(1.4f);
-        font.draw(batch,
+        bodyFont.setColor(Color.LIGHT_GRAY);
+        drawCentered(
+            batch,
+            bodyFont,
             "Press S to start",
-            width * 0.42f,
-            height * 0.35f);
+            height * 0.35f
+        );
+
+        drawCentered(
+            batch,
+            bodyFont,
+            "Back (B)",
+            height * 0.27f
+        );
 
         batch.end();
     }

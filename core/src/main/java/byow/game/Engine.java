@@ -8,6 +8,7 @@ import byow.game.save.SaveManager;
 import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
+import com.badlogic.gdx.Game;
 
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
@@ -33,9 +34,6 @@ public class Engine {
 
     /** 游戏存档管理器 */
     private final SaveManager saveManager = new SaveManager();
-
-    /** 是否检测到保存退出的冒号 */
-    private boolean colonPressed = false;
 
     /** 保存之后是否退出 */
     private boolean quitAfterSave;
@@ -95,6 +93,11 @@ public class Engine {
             return;
         }
 
+        if (c == 'B') {
+            state = GameState.MENU;
+            return;
+        }
+
         if (Character.isDigit(c)) {
             seedString.append(c);
         }
@@ -128,6 +131,11 @@ public class Engine {
      * 处理加载存档时的输入
      * */
     private void handleLoadInput(char c) {
+        if (c == 'B') {
+            state = GameState.MENU;
+            return;
+        }
+
         if (c < '1' || c > '5') {
             return;
         }
@@ -143,6 +151,12 @@ public class Engine {
      * 处理保存时的输入
      * */
     private void handleSaveInput(char c) {
+        if (c == 'B') {
+            state = GameState.PAUSE;
+            quitAfterSave = false;
+            return;
+        }
+
         if (c < '1' || c > '5') {
             return;
         }
@@ -150,7 +164,7 @@ public class Engine {
         int slot = Character.getNumericValue(c);
         saveGame(slot);
         if (quitAfterSave) {
-            quit();
+            state = GameState.MENU;
         } else {
             state = GameState.PAUSE;
         }
@@ -166,10 +180,7 @@ public class Engine {
                 quitAfterSave = false;
                 state = GameState.SAVE;
             }
-            case 'Q' -> {
-                state = GameState.CONFIRM_QUIT;
-            }
-
+            case 'Q' -> state = GameState.CONFIRM_QUIT;
         }
     }
 
@@ -182,9 +193,8 @@ public class Engine {
                 quitAfterSave = true;
                 state = GameState.SAVE;
             }
-            case 'N' -> {
-                quit();
-            }
+            case 'N' -> state = GameState.MENU;
+            case 'B' -> state = GameState.PAUSE;
         }
     }
 
@@ -196,19 +206,6 @@ public class Engine {
      * @param c 用户输入的字符
      */
     private void handlePlayingInput(char c) {
-
-        if (c == ':') {
-            colonPressed = true;
-            return;
-        }
-
-        if (colonPressed) {
-            if (c == 'Q') {
-                state = GameState.CONFIRM_QUIT;
-                return;
-            }
-            colonPressed = false;
-        }
 
         switch (c) {
             case 'W' -> player.moveUp(world);
