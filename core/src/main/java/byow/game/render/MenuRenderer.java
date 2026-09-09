@@ -3,7 +3,6 @@ package byow.game.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -15,8 +14,6 @@ public class MenuRenderer {
     private final BitmapFont titleFont;
     private final BitmapFont bodyFont;
     private final ShapeRenderer shapeRenderer;
-
-    private final GlyphLayout layout = new GlyphLayout();
 
     public MenuRenderer(SpriteBatch batch, FontManager fonts, ShapeRenderer shapeRenderer) {
         this.batch = batch;

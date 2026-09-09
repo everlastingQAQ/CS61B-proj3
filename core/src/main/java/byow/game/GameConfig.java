@@ -9,7 +9,7 @@ public class GameConfig {
 
     public static final int HUD_HEIGHT = 80;
 
-    public static final int CAMERA_VISIBLE_TILES_Y = 20;
+    public static final int CAMERA_VISIBLE_TILES_Y = 21;
 
     public static float getTileSize() {
 //        return Math.min (

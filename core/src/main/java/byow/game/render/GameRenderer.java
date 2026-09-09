@@ -31,6 +31,7 @@ public class GameRenderer {
 
         this.uiCamera = new OrthographicCamera();
 
+        // 初始化 UI camera 的 viewport。
         updateUiCamera();
 
         this.menuRenderer = new MenuRenderer(batch, fonts, shapeRenderer);
@@ -72,15 +73,28 @@ public class GameRenderer {
         }
     }
 
-    // TODO 注释
+    /**
+     * 更新 UI 摄像机。
+     */
     private void updateUiCamera() {
+        // 将 UI camera 设置成 2D 坐标系形式。
         uiCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // 更新 uiCamera
         uiCamera.update();
     }
 
+    /**
+     * 将渲染坐标系切换为 UI 坐标系。
+     */
     private void useUiCamera() {
+        // 先根据当前窗口尺寸更新 UI camera。
         updateUiCamera();
+
+        // 绘制的文字使用 UI 坐标系，
         batch.setProjectionMatrix(uiCamera.combined);
+
+        // 背景也使用 UI 坐标系
         shapeRenderer.setProjectionMatrix(uiCamera.combined);
     }
 }

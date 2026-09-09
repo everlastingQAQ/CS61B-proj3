@@ -3,7 +3,6 @@ package byow.game.player;
 import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.TileRules;
-import byow.game.tile.Tileset;
 
 /**
  * 玩家属性

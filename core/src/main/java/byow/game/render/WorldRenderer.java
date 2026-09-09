@@ -20,7 +20,6 @@ import static byow.game.GameConfig.WORLD_WIDTH;
  * 2. 行为
  * - render(TETile[][] world) 渲染世界
  */
-
 public class WorldRenderer {
 
     private final SpriteBatch batch;
@@ -31,10 +30,12 @@ public class WorldRenderer {
     private final float tileSize;
 
     /**
-     * 初始化世界渲染器
-     * @param shapeRenderer 传入背景渲染器, begin(), end()启用和关闭, 绘画背景时调用
-     * @param batch 传入字符渲染器, begin(), end()启用和关闭, 绘画字符时调用
-     * @param fonts 传入板块渲染器
+     * 创建 WorldRenderer。
+     *
+     * @param shapeRenderer 用于绘制 tile 背景
+     * @param batch 用于绘制 tile 字符
+     * @param fonts 游戏使用的字体管理器
+     * @param tileSize 一个 tile 的世界尺寸
      */
     public WorldRenderer(ShapeRenderer shapeRenderer,
                          SpriteBatch batch,
@@ -47,6 +48,7 @@ public class WorldRenderer {
 
         this.tileSize = tileSize;
 
+        // 初始化 camera 能看到多大的世界区域。
         updateCameraViewport();
 
         this.tileRenderer = new TileRenderer(batch, fonts.tile(), shapeRenderer, tileSize);
@@ -54,7 +56,8 @@ public class WorldRenderer {
 
     /**
      * 渲染世界
-     * @param world 传入需要渲染的世界
+     * @param world 当前世界
+     * @param player 当前玩家
      */
     public void render(TETile[][] world, Player player) {
 
@@ -62,6 +65,7 @@ public class WorldRenderer {
         updateCamera(player);
 
         // 先画背景
+        // 背景跟着 camera.combined 移动
         shapeRenderer.setProjectionMatrix(camera.combined);
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -74,6 +78,7 @@ public class WorldRenderer {
         shapeRenderer.end();
 
         // 再画字符
+        // 字符跟着 camera 移动，
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
@@ -88,24 +93,35 @@ public class WorldRenderer {
         batch.end();
     }
 
-    // TODO 注释
+    /**
+     * 设置 camera 的可视范围。
+     */
     private void updateCameraViewport() {
+        // 获取窗口宽高比。
         float aspectRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
 
+        // 设置 camera 纵向能够看到多少世界单位。
         camera.viewportHeight = GameConfig.CAMERA_VISIBLE_TILES_Y * tileSize;
 
+        // 根据窗口宽高比计算横向视野。
         camera.viewportWidth = camera.viewportHeight * aspectRatio;
 
+        // 更新 camera
         camera.update();
     }
 
+    /**
+     * 根据玩家当前位置更新 camera。
+     */
     private void updateCamera(Player player) {
+        // 计算 tile 的中心位置
         float playerCenterX = (player.x() + 0.5f) * tileSize;
-
         float playerCenterY = (player.y() + 0.5f) * tileSize;
 
+        // 把 camera 的中心位置设置为玩家中心位置。
         camera.position.set(playerCenterX, playerCenterY, 0);
 
+        // 更新 camera
         camera.update();
     }
 }
