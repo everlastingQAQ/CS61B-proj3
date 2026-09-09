@@ -3,7 +3,6 @@ package byow.game.render;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static byow.game.render.RenderUtils.drawCentered;
@@ -48,21 +47,21 @@ public class LoadRenderer {
             batch,
             bodyFont,
             "Press 1-5 to load",
-            height * 0.18f
+            height * 0.20f
         );
 
         drawCentered(
             batch,
             bodyFont,
             "Empty slots cannot be loaded.",
-            height * 0.11f
+            height * 0.14f
         );
 
         drawCentered(
             batch,
             bodyFont,
             "Back (B)",
-            height * 0.10f
+            height * 0.08f
         );
 
         batch.end();

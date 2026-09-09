@@ -8,7 +8,6 @@ import byow.game.save.SaveManager;
 import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
-import com.badlogic.gdx.Game;
 
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
@@ -36,7 +35,7 @@ public class Engine {
     private final SaveManager saveManager = new SaveManager();
 
     /** 保存之后是否退出 */
-    private boolean quitAfterSave;
+    private boolean returnToMenuAfterSave;
 
     /** 是否请求退出游戏 */
     private boolean shouldQuit = false;
@@ -153,7 +152,7 @@ public class Engine {
     private void handleSaveInput(char c) {
         if (c == 'B') {
             state = GameState.PAUSE;
-            quitAfterSave = false;
+            returnToMenuAfterSave = false;
             return;
         }
 
@@ -163,7 +162,7 @@ public class Engine {
 
         int slot = Character.getNumericValue(c);
         saveGame(slot);
-        if (quitAfterSave) {
+        if (returnToMenuAfterSave) {
             state = GameState.MENU;
         } else {
             state = GameState.PAUSE;
@@ -177,7 +176,7 @@ public class Engine {
         switch(c) {
             case 'P' -> state = GameState.PLAYING;
             case 'S' -> {
-                quitAfterSave = false;
+                returnToMenuAfterSave = false;
                 state = GameState.SAVE;
             }
             case 'Q' -> state = GameState.CONFIRM_QUIT;
@@ -190,7 +189,7 @@ public class Engine {
     private void handleConfirmQuitInput(char c) {
         switch(c) {
             case 'Y' -> {
-                quitAfterSave = true;
+                returnToMenuAfterSave = true;
                 state = GameState.SAVE;
             }
             case 'N' -> state = GameState.MENU;

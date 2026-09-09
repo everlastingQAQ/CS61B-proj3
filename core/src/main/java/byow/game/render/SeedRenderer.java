@@ -28,6 +28,7 @@ public class SeedRenderer {
         // 输入框
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
+        shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.rect(
             width * 0.30f,
             height * 0.43f,
