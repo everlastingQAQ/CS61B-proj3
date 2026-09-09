@@ -1,6 +1,8 @@
 package byow.game.render;
 
+import byow.game.player.Player;
 import byow.game.tile.TETile;
+import byow.game.tile.Tileset;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -57,7 +59,7 @@ public class WorldRenderer {
      * 渲染世界
      * @param world 传入需要渲染的世界
      */
-    public void render(TETile[][] world) {
+    public void render(TETile[][] world, Player player) {
         // 先画背景
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int x = 0; x < world.length; x++) {
@@ -74,6 +76,7 @@ public class WorldRenderer {
                 tileRenderer.drawCharacter(world[x][y], x, y);
             }
         }
+        tileRenderer.drawCharacter(Tileset.AVATAR, player.x(), player.y());
         batch.end();
     }
 }

@@ -34,7 +34,7 @@ public class GameRenderer {
         switch (engine.state()) {
             case MENU -> menuRenderer.render();
             case SEED -> seedRenderer.render(engine.seedString());
-            case PLAYING -> worldRenderer.render(engine.world());
+            case PLAYING -> worldRenderer.render(engine.world(), engine.player());
             case PAUSE -> pauseRenderer.render();
             case SAVE -> saveRenderer.render();
             case LOAD -> loadRenderer.render();

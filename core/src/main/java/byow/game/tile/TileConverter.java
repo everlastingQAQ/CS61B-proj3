@@ -57,7 +57,6 @@ public class TileConverter {
 
         return switch (tile.description()) {
 
-            case "you" -> TileType.FLOOR;//TODO 分离人物和地图
             case "wall" -> TileType.WALL;
             case "floor" -> TileType.FLOOR;
             case "nothing" -> TileType.NOTHING;
