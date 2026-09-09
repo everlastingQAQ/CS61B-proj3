@@ -45,11 +45,11 @@ public class WorldRenderer {
 
         this.camera = new OrthographicCamera();
 
+        this.tileSize = tileSize;
+
         updateCameraViewport();
 
         this.tileRenderer = new TileRenderer(batch, fonts.tile(), shapeRenderer, tileSize);
-
-        this.tileSize = tileSize;
     }
 
     /**
@@ -62,7 +62,10 @@ public class WorldRenderer {
         updateCamera(player);
 
         // 先画背景
+        shapeRenderer.setProjectionMatrix(camera.combined);
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         for (int x = 0; x < world.length; x++) {
             for (int y = 0; y < world[0].length; y++) {
                 tileRenderer.drawBackground(world[x][y], x, y);
@@ -85,6 +88,7 @@ public class WorldRenderer {
         batch.end();
     }
 
+    // TODO 注释
     private void updateCameraViewport() {
         float aspectRatio = (float)Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
 

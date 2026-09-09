@@ -72,6 +72,7 @@ public class GameRenderer {
         }
     }
 
+    // TODO 注释
     private void updateUiCamera() {
         uiCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         uiCamera.update();
