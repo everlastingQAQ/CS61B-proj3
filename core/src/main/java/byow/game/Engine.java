@@ -1,5 +1,7 @@
 package byow.game;
 
+import byow.game.item.Item;
+import byow.game.itemGenerator.ItemGenerator;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
 import byow.game.save.GameSave;
@@ -8,6 +10,8 @@ import byow.game.save.SaveManager;
 import byow.game.save.WorldData;
 import byow.game.tile.TETile;
 import byow.game.worldGenerator.WorldGenerator;
+
+import java.util.*;
 
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
@@ -23,6 +27,9 @@ public class Engine {
 
     /** 当前游戏玩家。 */
     private Player player;
+
+    /** 当前游戏物品。 */
+    private List<Item> items;
 
     /** 用于暂存用户输入的新世界随机种子。 */
     private final StringBuilder seedString = new StringBuilder();
@@ -228,6 +235,9 @@ public class Engine {
         // 创建人物
         player = new Player(world, random);
 
+        // 创建物品
+        items = ItemGenerator.generate(world, player, random);
+
         // 更改游戏状态
         state = GameState.PLAYING;
     }
@@ -290,6 +300,10 @@ public class Engine {
 
     public Player player() {
         return player;
+    }
+
+    public List<Item> items() {
+        return items;
     }
 
     public String seedString() {

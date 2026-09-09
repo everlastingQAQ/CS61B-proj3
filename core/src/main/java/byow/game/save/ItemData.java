@@ -1,4 +1,5 @@
 package byow.game.save;
 
-public class ItemData {
-}
+import byow.game.item.ItemType;
+
+public record ItemData(int x, int y, ItemType type) {}

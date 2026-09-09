@@ -43,7 +43,6 @@ public class Player {
 
     /**
      * 加载玩家
-     *
      * @param x 玩家的横坐标
      * @param y 玩家的纵坐标
      * @param world 玩家的世界

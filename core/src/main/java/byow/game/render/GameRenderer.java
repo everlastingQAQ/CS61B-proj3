@@ -50,7 +50,8 @@ public class GameRenderer {
 
     public void render(Engine engine) {
         switch (engine.state()) {
-            case PLAYING -> worldRenderer.render(engine.world(), engine.player());
+            case PLAYING -> worldRenderer.render(engine.world(), engine.player(), engine.items());
+
             case MENU -> {
                 useUiCamera();
                 menuRenderer.render();

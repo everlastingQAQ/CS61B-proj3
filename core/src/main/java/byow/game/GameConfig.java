@@ -12,6 +12,8 @@ public class GameConfig {
 
     public static final int CAMERA_VISIBLE_TILES_Y = 21;
 
+    public static final int ITEM_NUMBER = 5;
+
     public static float getTileSize() {
 //        return Math.min (
 //            WINDOW_WIDTH / WORLD_WIDTH,

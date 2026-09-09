@@ -1,8 +1,10 @@
 package byow.game.render.world;
 
 import byow.game.GameConfig;
+import byow.game.item.Item;
 import byow.game.player.Player;
 import byow.game.render.FontManager;
+import byow.game.item.Itemset;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
 import com.badlogic.gdx.Gdx;
@@ -11,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
-import java.awt.*;
+import java.util.*;
 
 /**
  * 负责渲染一个世界
@@ -61,7 +63,7 @@ public class WorldRenderer {
      * @param world 当前世界
      * @param player 当前玩家
      */
-    public void render(TETile[][] world, Player player) {
+    public void render(TETile[][] world, Player player, List<Item> items) {
 
         // 镜头跟随玩家
         updateCamera(world, player);
@@ -90,8 +92,15 @@ public class WorldRenderer {
             }
         }
 
+        // 画物品的字符
+        for (Item item : items) {
+            TETile appearance = Itemset.get(item.type());
+            tileRenderer.drawCharacter(appearance, item.x(), item.y());
+        }
+
         // 画玩家
         tileRenderer.drawCharacter(Tileset.AVATAR, player.x(), player.y());
+
         batch.end();
     }
 
