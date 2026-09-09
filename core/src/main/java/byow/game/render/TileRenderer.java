@@ -25,7 +25,6 @@ public class TileRenderer {
     private final ShapeRenderer shapeRenderer;
 
     private final float tileSize;
-    private final float offsetX;
 
     private final GlyphLayout layout = new GlyphLayout();
 
@@ -35,18 +34,15 @@ public class TileRenderer {
      * @param font 传入font, 用于绘画板块
      * @param shapeRenderer 传入shapeRenderer, 用于绘画背景, 绘画时候调用自己
      * @param tileSize 传入每一个板块占像素, 用于绘画计算位置
-     * @param offsetX 传入水平偏移量
      */
     public TileRenderer(SpriteBatch batch,
                         BitmapFont font,
                         ShapeRenderer shapeRenderer,
-                        float tileSize,
-                        float offsetX) {
+                        float tileSize) {
         this.batch = batch;
         this.tileFont = font;
         this.shapeRenderer = shapeRenderer;
         this.tileSize = tileSize;
-        this.offsetX = offsetX;
     }
 
     /**
@@ -63,7 +59,7 @@ public class TileRenderer {
         shapeRenderer.setColor(toGdxColor(tile.backgroundColor()));
 
         // 调用自己绘画,  rect(左下角 x, 左下角 y, 宽度, 高度)
-        shapeRenderer.rect(px + offsetX, py, tileSize, tileSize);
+        shapeRenderer.rect(px, py, tileSize, tileSize);
     }
 
     /**
@@ -91,7 +87,7 @@ public class TileRenderer {
         float textY = py + (tileSize + layout.height) / 2f;
 
         // 通过 draw(batch, 字符, 字符开始绘画横坐标, 字符baseline纵坐标)
-        tileFont.draw(batch, text, textX + offsetX, textY);
+        tileFont.draw(batch, text, textX, textY);
     }
 
     // 将TETile的颜色转化成BitmapFont的颜色单位
