@@ -105,7 +105,7 @@ public class WorldRenderer {
     }
 
     /**
-     * 设置Camera属性, 改变窗口尺寸
+     * 设置 Camera 可视范围
      * @param width 窗口尺寸
      * @param height 窗口尺寸
      */
@@ -123,7 +123,7 @@ public class WorldRenderer {
     }
 
     /**
-     * 根据玩家当前位置更新 camera。
+     * 根据玩家当前位置更新 camera 视觉中心
      */
     private void updateCamera(TETile[][] world, Player player) {
         // 计算player所在中心位置

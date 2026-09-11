@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.HdpiUtils;
 
 import static byow.game.GameConfig.*;
 
@@ -52,37 +53,51 @@ public class GameRenderer {
     public void render(Engine engine) {
         switch (engine.state()) {
             case PLAYING -> {
+                useWorldViewPoint();
                 worldRenderer.render(engine.world(), engine.player(), engine.items());
+
+                useFullViewport();
                 useUiCamera();
                 hudRenderer.render(engine.CollectedCount(), ITEM_NUMBER);
             }
 
             case MENU -> {
+                useFullViewport();
                 useUiCamera();
                 menuRenderer.render();
             }
             case SEED -> {
+                useFullViewport();
                 useUiCamera();
                 seedRenderer.render(engine.seedString());
             }
             case PAUSE -> {
+                useFullViewport();
                 useUiCamera();
                 pauseRenderer.render();
             }
             case SAVE -> {
+                useFullViewport();
                 useUiCamera();
                 saveRenderer.render();
             }
             case LOAD -> {
+                useFullViewport();
                 useUiCamera();
                 loadRenderer.render();
             }
             case CONFIRM_QUIT -> {
+                useFullViewport();
                 useUiCamera();
                 confirmQuitRenderer.render();
             }
+
         }
     }
+
+    // =====================
+    // Camera用来改变变量的可视范围和视觉中心
+    // =====================
 
     /**
      * 更新 UI 摄像机
@@ -98,7 +113,7 @@ public class GameRenderer {
     }
 
     /**
-     * 将渲染坐标系切换为 UI 坐标系。
+     * 将渲染坐标系切换为 UI 坐标系, 提供一个固定于屏幕的坐标系，所以 UI 不会随着 world camera / 玩家位置变化。
      */
     private void useUiCamera() {
         // 绘制的文字使用 UI 坐标系，
@@ -109,10 +124,38 @@ public class GameRenderer {
     }
 
     /**
-     * 修改UiCamera的尺寸, 当存在窗口大小改变的时候被 ByowGame 调用
+     * 修改两个Camera的尺寸, 当存在窗口大小改变的时候自动被调用
      */
     public void resize(int width, int height) {
         updateUiCamera(width, height);
-        worldRenderer.resize(width, height);
+
+        int worldHeight = height - HUD_HEIGHT;
+        worldRenderer.resize(width, worldHeight);
+    }
+
+    // =====================
+    // Viewport是改变渲染区域的函数, 设计让hud区域和世界区域分开
+    // =====================
+
+    /**
+     *  调整渲染区域, 仅渲染hud以下区域
+     */
+    private void useWorldViewPoint() {
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+
+        int worldHeight = height - HUD_HEIGHT;
+
+        HdpiUtils.glViewport(0, 0, width, worldHeight);
+    }
+
+    /**
+     * 调整渲染区域为全剧
+     */
+    private void useFullViewport() {
+        int width = Gdx.graphics.getWidth();
+        int height = Gdx.graphics.getHeight();
+
+        HdpiUtils.glViewport(0, 0, width, height);
     }
 }
