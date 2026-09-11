@@ -82,8 +82,10 @@ public class TileRenderer {
         // 通过工具测量一段文字实际占多大空间
         layout.setText(tileFont, text);
 
-        // 居中计算: 容器起点 + (容器大小 - 内容大小) / 2
+        // 居中计算X: 容器起点 + (容器大小 - 内容大小) / 2
         float textX = px + (tileSize - layout.width) / 2f;
+
+        // 居中计算Y: 容器起点 + (容器大小 + 内容大小) / 2
         float textY = py + (tileSize + layout.height) / 2f;
 
         // 通过 draw(batch, 字符, 字符开始绘画横坐标, 字符baseline纵坐标)

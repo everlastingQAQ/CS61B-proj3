@@ -10,6 +10,7 @@ import byow.game.worldGenerator.WorldGenerator;
 
 import java.util.*;
 
+import static byow.game.GameConfig.ITEM_NUMBER;
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
 
@@ -285,6 +286,9 @@ public class Engine {
         // 创建物品
         items = ItemGenerator.generate(world, player, random);
 
+        // 初始化物品数量
+        collectedCount = 0;
+
         // 更改游戏状态
         state = GameState.PLAYING;
     }
@@ -319,6 +323,9 @@ public class Engine {
 
         // 加载物品
         this.items = new ArrayList<>();
+
+        // 设置拾取的物品个数
+        collectedCount = ITEM_NUMBER - items().size();
 
         for (ItemData data : gamesave.items()) {
             this.items.add(
@@ -390,4 +397,7 @@ public class Engine {
         return shouldQuit;
     }
 
+    public int CollectedCount() {
+        return collectedCount;
+    }
 }

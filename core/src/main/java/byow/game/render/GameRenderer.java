@@ -8,8 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import static byow.game.GameConfig.WINDOW_HEIGHT;
-import static byow.game.GameConfig.WINDOW_WIDTH;
+import static byow.game.GameConfig.*;
 
 public class GameRenderer {
 
@@ -20,6 +19,7 @@ public class GameRenderer {
     private final SaveRenderer saveRenderer;
     private final LoadRenderer loadRenderer;
     private final ConfirmQuitRenderer confirmQuitRenderer;
+    private final HudRenderer hudRenderer;
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
@@ -46,11 +46,16 @@ public class GameRenderer {
         this.saveRenderer = new SaveRenderer(batch, fonts);
         this.loadRenderer = new LoadRenderer(batch, fonts);
         this.confirmQuitRenderer = new ConfirmQuitRenderer(batch, fonts);
+        this.hudRenderer = new HudRenderer(batch, fonts, shapeRenderer);
     }
 
     public void render(Engine engine) {
         switch (engine.state()) {
-            case PLAYING -> worldRenderer.render(engine.world(), engine.player(), engine.items());
+            case PLAYING -> {
+                worldRenderer.render(engine.world(), engine.player(), engine.items());
+                useUiCamera();
+                hudRenderer.render(engine.CollectedCount(), ITEM_NUMBER);
+            }
 
             case MENU -> {
                 useUiCamera();
