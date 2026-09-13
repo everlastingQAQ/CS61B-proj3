@@ -14,7 +14,7 @@ public class Monster {
         int originY = random.nextInt(1, world[0].length - 1);
 
         // 判断当前位置是否玩家可通行,如果不可以再次随机一个
-        while (isOriginPositon(world, player, originX, originY)) {
+        while (!isOriginPositon(world, player, originX, originY)) {
             originX = random.nextInt(1, world.length - 1);
             originY = random.nextInt(1, world[0].length - 1);
         }
@@ -41,8 +41,9 @@ public class Monster {
             return false;
         }
 
-        // 不能在玩家范围5内生成
-        if (Math.abs(width - player.x()) < 5 || Math.abs(height - player.y()) < 5) {
+        // 不能初始位置离玩家太近
+        int distance = Math.abs(width - player.x()) + Math.abs(height - player.y());
+        if (distance < 10) {
             return false;
         }
 

@@ -222,6 +222,7 @@ public class Engine {
 
         if (moved) {
             resolvePlayerInteractions();
+            resolveMonsterInteractions();
         }
     }
 
