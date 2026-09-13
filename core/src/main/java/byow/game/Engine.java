@@ -1,7 +1,9 @@
 package byow.game;
 
+import byow.game.pathfinder.Pathfinder;
 import byow.game.item.Item;
 import byow.game.itemGenerator.ItemGenerator;
+import byow.game.monster.Monster;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
 import byow.game.save.*;
@@ -28,6 +30,9 @@ public class Engine {
 
     /** 当前游戏物品。 */
     private List<Item> items;
+
+    /** 当前唯一怪物 */
+    Monster monster;
 
     /** 当前拥有的物品数。 */
     private int collectedCount;
@@ -259,6 +264,20 @@ public class Engine {
         // TODO: 产生效果
     }
 
+    // 处理怪物交互
+    private void resolveMonsterInteractions() {
+        moveMonsterOnce();
+    }
+
+    // 怪物移动一步
+    private void moveMonsterOnce() {
+        Pathfinder.Position next = Pathfinder.nextStep(world, monster.x(), monster.y(), player.x(), player().y());
+
+        if (next == null) return;
+
+        monster.moveTo(next.x(), next.y());
+    }
+
     // =====================
     // Game lifecycle
     // =====================
@@ -286,6 +305,9 @@ public class Engine {
         // 创建物品
         items = ItemGenerator.generate(world, player, random);
 
+        // 创建怪物
+        monster = new Monster(world, random, player);
+
         // 初始化物品数量
         collectedCount = 0;
 
@@ -307,7 +329,7 @@ public class Engine {
 
     /**
      * 根据存档加载游戏
-     * */
+     **/
     private void loadGame(int slot) {
         // 加载 gamesave
         GameSave gamesave = saveManager.load(slot);
@@ -387,6 +409,10 @@ public class Engine {
 
     public List<Item> items() {
         return items;
+    }
+
+    public Monster monster() {
+        return monster;
     }
 
     public String seedString() {

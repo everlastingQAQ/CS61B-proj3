@@ -29,6 +29,9 @@ public class Tileset {
     public static final TETile NOTHING =
         new TETile(' ', new Color(0, 0, 0), new Color(8, 12, 20), "nothing");
 
+    public static final TETile MONSTER =
+        new TETile('◆', new Color(255, 90, 90), new Color(45, 55, 70), "monster");
+
     public static final TETile GRASS = new TETile('"', Color.green, Color.black, "grass");
     public static final TETile WATER = new TETile('≈', Color.blue, Color.black, "water");
     public static final TETile FLOWER = new TETile('❀', Color.magenta, Color.pink, "flower");

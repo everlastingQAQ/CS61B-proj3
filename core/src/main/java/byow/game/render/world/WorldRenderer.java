@@ -2,6 +2,7 @@ package byow.game.render.world;
 
 import byow.game.GameConfig;
 import byow.game.item.Item;
+import byow.game.monster.Monster;
 import byow.game.player.Player;
 import byow.game.render.FontManager;
 import byow.game.item.Itemset;
@@ -63,7 +64,7 @@ public class WorldRenderer {
      * @param world 当前世界
      * @param player 当前玩家
      */
-    public void render(TETile[][] world, Player player, List<Item> items) {
+    public void render(TETile[][] world, Player player, Monster monster, List<Item> items) {
 
         // 镜头跟随玩家
         updateCamera(world, player);
@@ -97,6 +98,9 @@ public class WorldRenderer {
             TETile appearance = Itemset.get(item.type());
             tileRenderer.drawCharacter(appearance, item.x(), item.y());
         }
+
+        // 画怪物
+        tileRenderer.drawCharacter(Tileset.MONSTER, monster.x(), monster.y());
 
         // 画玩家
         tileRenderer.drawCharacter(Tileset.AVATAR, player.x(), player.y());

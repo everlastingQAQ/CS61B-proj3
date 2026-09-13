@@ -32,7 +32,7 @@ public class Player {
         int originY = random.nextInt(1, world[0].length - 1);
 
         // 判断当前位置是否玩家可通行,如果不可以再次随机一个
-        while (!isPlaceWalkable(world, originX, originY)) {
+        while (!isWalkable(world, originX, originY)) {
             originX = random.nextInt(1, world.length - 1);
             originY = random.nextInt(1, world[0].length - 1);
         }
@@ -48,7 +48,7 @@ public class Player {
      * @param world 玩家的世界
      */
     public Player(TETile[][] world, int x, int y) {
-        if (!isPlaceWalkable(world, x, y)) {
+        if (!isWalkable(world, x, y)) {
             throw new IllegalArgumentException(
                 "Player position is not walkable"
             );
@@ -78,7 +78,7 @@ public class Player {
      * 2. UNLOCKED_DOOR 可走
      * 3. FLOOR 可走
      */
-    private boolean isPlaceWalkable(TETile[][] world, int x, int y) {
+    private boolean isWalkable(TETile[][] world, int x, int y) {
         if (x < 1 || x >= world.length - 1 || y < 1 || y >= world[0].length - 1) {
             return false;
         }
@@ -95,7 +95,7 @@ public class Player {
      * @return 返回是否移动成功
      */
     public boolean moveUp(TETile[][] world) {
-        if (!isPlaceWalkable(world, x, y + 1)) {
+        if (!isWalkable(world, x, y + 1)) {
             return false;
         }
         y++;
@@ -103,7 +103,7 @@ public class Player {
     }
 
     public boolean moveDown(TETile[][] world) {
-        if (!isPlaceWalkable(world, x, y - 1)) {
+        if (!isWalkable(world, x, y - 1)) {
             return false;
         }
         y--;
@@ -111,7 +111,7 @@ public class Player {
     }
 
     public boolean moveLeft(TETile[][] world) {
-        if (!isPlaceWalkable(world, x - 1, y)) {
+        if (!isWalkable(world, x - 1, y)) {
             return false;
         }
         x--;
@@ -119,7 +119,7 @@ public class Player {
     }
 
     public boolean moveRight(TETile[][] world) {
-        if (!isPlaceWalkable(world, x + 1, y)) {
+        if (!isWalkable(world, x + 1, y)) {
             return false;
         }
         x++;
