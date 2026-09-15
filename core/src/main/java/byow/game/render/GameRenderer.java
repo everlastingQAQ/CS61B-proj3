@@ -4,6 +4,7 @@ import byow.game.Engine;
 import byow.game.render.ui.*;
 import byow.game.render.world.FogRenderer;
 import byow.game.render.world.WorldRenderer;
+import byow.game.visioncauculate.Visioncauculate;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -58,7 +59,8 @@ public class GameRenderer {
             case PLAYING -> {
                 useWorldViewPoint();
                 worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items());
-                fogRenderer.render(engine.player(), engine.visionRadius());
+
+                fogRenderer.render(Visioncauculate.calculate(engine.world(), engine.player(), engine.visionRadius()));
 
                 useFullViewport();
                 useUiCamera();

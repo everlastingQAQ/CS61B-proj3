@@ -15,15 +15,13 @@ public class FogRenderer {
         this.tileSize = tileSize;
     }
 
-    public void render(Player player, int visionRadius) {
+    public void render(boolean[][] visible) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.DARK_GRAY);
 
         for (int i = 0; i < GameConfig.WORLD_WIDTH; i++) {
             for (int j = 0; j < GameConfig.WORLD_HEIGHT; j++) {
-                int distanceTo = (player.x() - i) * (player.x() - i) + (player.y() - j) * (player.y() - j);
-
-                if (distanceTo > visionRadius * visionRadius) {
+                if (!visible[i][j]) {
                     shapeRenderer.rect(i * tileSize, j * tileSize, tileSize, tileSize);
                 }
             }

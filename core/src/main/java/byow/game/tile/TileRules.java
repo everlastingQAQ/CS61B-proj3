@@ -16,7 +16,7 @@ public final class TileRules {
             || tile.equals(BRIDGE);
     }
 
-    public static boolean isVisible(TETile tile) {
+    public static boolean isTransparent(TETile tile) {
         return !tile.equals(WALL) && !tile.equals(CLOSED_DOOR);
     }
 }
