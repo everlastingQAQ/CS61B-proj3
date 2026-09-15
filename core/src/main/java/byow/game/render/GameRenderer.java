@@ -2,6 +2,7 @@ package byow.game.render;
 
 import byow.game.Engine;
 import byow.game.render.ui.*;
+import byow.game.render.world.FogRenderer;
 import byow.game.render.world.WorldRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -16,6 +17,7 @@ public class GameRenderer {
     private final MenuRenderer menuRenderer;
     private final SeedRenderer seedRenderer;
     private final WorldRenderer worldRenderer;
+    private final FogRenderer fogRenderer;
     private final PauseRenderer pauseRenderer;
     private final SaveRenderer saveRenderer;
     private final LoadRenderer loadRenderer;
@@ -43,6 +45,7 @@ public class GameRenderer {
         this.menuRenderer = new MenuRenderer(batch, fonts, shapeRenderer);
         this.seedRenderer = new SeedRenderer(batch, fonts, shapeRenderer);
         this.worldRenderer = new WorldRenderer(shapeRenderer, batch, fonts, tileSize);
+        this.fogRenderer = new FogRenderer(shapeRenderer, tileSize);
         this.pauseRenderer = new PauseRenderer(batch, fonts);
         this.saveRenderer = new SaveRenderer(batch, fonts);
         this.loadRenderer = new LoadRenderer(batch, fonts);
@@ -55,6 +58,7 @@ public class GameRenderer {
             case PLAYING -> {
                 useWorldViewPoint();
                 worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items());
+                fogRenderer.render(engine.player(), engine.visionRadius());
 
                 useFullViewport();
                 useUiCamera();

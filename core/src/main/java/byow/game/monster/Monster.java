@@ -9,6 +9,8 @@ public class Monster {
     private int x;
     private int y;
 
+    private final Direction direction;
+
     public Monster(TETile[][] world, GameRandom random, Player player) {
         int originX = random.nextInt(1, world.length - 1);
         int originY = random.nextInt(1, world[0].length - 1);
@@ -21,9 +23,10 @@ public class Monster {
 
         this.x = originX;
         this.y = originY;
+        this.direction = Direction.randomDirection(random);
     }
 
-    private boolean isPlaceWalkable(TETile[][] world, int width, int height) {
+    private boolean isWalkable(TETile[][] world, int width, int height) {
         if (width < 1 || width >= world.length - 1 || height < 1 || height >= world[0].length - 1) {
             return false;
         }
@@ -32,7 +35,7 @@ public class Monster {
 
     private boolean isOriginPositon(TETile[][] world, Player player, int width, int height) {
         // 不能生成在不能行走的道路
-        if (!isPlaceWalkable(world, width, height)) {
+        if (!isWalkable(world, width, height)) {
             return false;
         }
 
@@ -56,6 +59,10 @@ public class Monster {
 
     public int y() {
         return y;
+    }
+
+    public Direction direction() {
+        return direction;
     }
 
     public void moveTo(int x, int y) {

@@ -37,6 +37,9 @@ public class Engine {
     /** 当前拥有的物品数。 */
     private int collectedCount;
 
+    /** 当前玩家视野范围。 */
+    private int visionRadius;
+
     /** 用于暂存用户输入的新世界随机种子。 */
     private final StringBuilder seedString = new StringBuilder();
 
@@ -312,6 +315,9 @@ public class Engine {
         // 初始化物品数量
         collectedCount = 0;
 
+        // 初始化视野范围
+        visionRadius = 5;
+
         // 更改游戏状态
         state = GameState.PLAYING;
     }
@@ -426,5 +432,9 @@ public class Engine {
 
     public int CollectedCount() {
         return collectedCount;
+    }
+
+    public int visionRadius() {
+        return visionRadius;
     }
 }

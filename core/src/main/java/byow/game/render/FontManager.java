@@ -111,7 +111,7 @@ public class FontManager {
         parameter.size = size;
 
         // 指定需要真正生成到 BitmapFont 中的字符。
-        parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "·≈❀█▢▒▲♠●";
+        parameter.characters = FreeTypeFontGenerator.DEFAULT_CHARS + "·≈❀█▢▒▲♠●◆";
 
         // 设置字体纹理缩小时的过滤方式。
         parameter.minFilter = Texture.TextureFilter.Nearest;
