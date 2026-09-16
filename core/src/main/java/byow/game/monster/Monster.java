@@ -9,8 +9,6 @@ public class Monster {
     private int x;
     private int y;
 
-    private final Direction direction;
-
     public Monster(TETile[][] world, GameRandom random, Player player) {
         int originX = random.nextInt(1, world.length - 1);
         int originY = random.nextInt(1, world[0].length - 1);
@@ -23,7 +21,11 @@ public class Monster {
 
         this.x = originX;
         this.y = originY;
-        this.direction = Direction.randomDirection(random);
+    }
+
+    public Monster(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     private boolean isWalkable(TETile[][] world, int width, int height) {
@@ -59,10 +61,6 @@ public class Monster {
 
     public int y() {
         return y;
-    }
-
-    public Direction direction() {
-        return direction;
     }
 
     public void moveTo(int x, int y) {

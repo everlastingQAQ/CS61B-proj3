@@ -396,6 +396,9 @@ public class Engine {
         // 加载物品
         this.items = new ArrayList<>();
 
+        // 加载怪物
+        this.monster = new Monster(gamesave.monsterData().x(), gamesave.monsterData().y());
+
         // 加载物品栏
         for (ItemData data : gamesave.items()) {
             this.items.add(
@@ -409,6 +412,9 @@ public class Engine {
 
         // 设置拾取的物品个数
         collectedCount = ITEM_NUMBER - items().size();
+
+        // 加载可视范围
+        visionRadius = gamesave.visionRadius();
 
         // 加载已探索区域
         this.explored = copyGrid(gamesave.explored());
@@ -433,12 +439,11 @@ public class Engine {
 
         GameSave gameSave = new GameSave(
             new WorldData(toTileType(world)),
-            new PlayerData(
-                player.x(),
-                player.y()
-            ),
+            new PlayerData(player.x(), player.y()),
             itemDataList,
+            new MonsterData(monster.x(), monster.y()),
             copyGrid(explored),
+            visionRadius,
             random.state()
             );
         saveManager.save(slot, gameSave);
