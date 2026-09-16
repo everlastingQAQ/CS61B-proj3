@@ -8,6 +8,7 @@ import byow.game.player.Player;
 import byow.game.random.GameRandom;
 import byow.game.save.*;
 import byow.game.tile.TETile;
+import byow.game.visioncauculate.Visioncauculate;
 import byow.game.worldGenerator.WorldGenerator;
 
 import java.util.*;
@@ -60,6 +61,12 @@ public class Engine {
 
     /** 是否请求退出游戏 */
     private boolean shouldQuit = false;
+
+    /** 视觉可视范围。 */
+    private boolean[][] visible;
+
+    /** 已经探索过的范围。 */
+    private boolean[][] explored;
 
 
     // =====================
@@ -226,6 +233,7 @@ public class Engine {
         if (moved) {
             resolvePlayerInteractions();
             resolveMonsterInteractions();
+            updateVision();
         }
     }
 
@@ -283,6 +291,22 @@ public class Engine {
     }
 
     // =====================
+    // Update Vision
+    // ====================
+
+    public void updateVision() {
+        visible = Visioncauculate.calculate(world, player, visionRadius);
+
+        for (int x = 0; x < world.length; x++) {
+            for (int y = 0; y < world[0].length; y++) {
+                if (visible[x][y]) {
+                    explored[x][y] = true;
+                }
+            }
+        }
+    }
+
+    // =====================
     // Game lifecycle
     // =====================
 
@@ -320,6 +344,12 @@ public class Engine {
 
         // 更改游戏状态
         state = GameState.PLAYING;
+
+        // 初始化可视范围
+        visible = new boolean[world.length][world[0].length];
+
+        // 初始化探索范围
+        explored = new boolean[world.length][world[0].length];
     }
 
     /**
@@ -436,5 +466,13 @@ public class Engine {
 
     public int visionRadius() {
         return visionRadius;
+    }
+
+    public boolean[][] visible() {
+        return visible;
+    }
+
+    public boolean[][] explored() {
+        return explored;
     }
 }

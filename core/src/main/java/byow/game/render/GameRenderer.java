@@ -60,7 +60,7 @@ public class GameRenderer {
                 useWorldViewPoint();
                 worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items());
 
-                fogRenderer.render(Visioncauculate.calculate(engine.world(), engine.player(), engine.visionRadius()));
+                fogRenderer.render(engine.visible(), engine.explored());
 
                 useFullViewport();
                 useUiCamera();
