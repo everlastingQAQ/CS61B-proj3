@@ -342,14 +342,16 @@ public class Engine {
         // 初始化视野范围
         visionRadius = 7;
 
-        // 更改游戏状态
-        state = GameState.PLAYING;
-
         // 初始化可视范围
         visible = new boolean[world.length][world[0].length];
 
         // 初始化探索范围
         explored = new boolean[world.length][world[0].length];
+
+        updateVision();
+
+        // 更改游戏状态
+        state = GameState.PLAYING;
     }
 
     /**
@@ -363,6 +365,17 @@ public class Engine {
     // =====================
     // Save / Load
     // =====================
+
+    // 复制boolean数组
+    private static boolean[][] copyGrid(boolean[][] source) {
+        boolean[][] copy = new boolean[source.length][];
+
+        for (int x = 0; x < source.length; x++) {
+            copy[x] = source[x].clone();
+        }
+
+        return copy;
+    }
 
     /**
      * 根据存档加载游戏
@@ -383,9 +396,7 @@ public class Engine {
         // 加载物品
         this.items = new ArrayList<>();
 
-        // 设置拾取的物品个数
-        collectedCount = ITEM_NUMBER - items().size();
-
+        // 加载物品栏
         for (ItemData data : gamesave.items()) {
             this.items.add(
                 new Item(
@@ -395,6 +406,12 @@ public class Engine {
                 )
             );
         }
+
+        // 设置拾取的物品个数
+        collectedCount = ITEM_NUMBER - items().size();
+
+        // 加载已探索区域
+        this.explored = copyGrid(gamesave.explored());
     }
 
     /**
@@ -420,9 +437,8 @@ public class Engine {
                 player.x(),
                 player.y()
             ),
-
             itemDataList,
-
+            copyGrid(explored),
             random.state()
             );
         saveManager.save(slot, gameSave);

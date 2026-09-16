@@ -6,5 +6,6 @@ public record GameSave(
     WorldData worldData,
     PlayerData playerData,
     List<ItemData> items,
+    boolean[][] explored,
     long randomState
 ) {}
