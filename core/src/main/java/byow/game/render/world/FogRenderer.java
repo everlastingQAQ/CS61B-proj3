@@ -17,7 +17,7 @@ public class FogRenderer {
 
     public void render(boolean[][] visible) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.DARK_GRAY);
+        shapeRenderer.setColor(Color.BLACK);
 
         for (int i = 0; i < GameConfig.WORLD_WIDTH; i++) {
             for (int j = 0; j < GameConfig.WORLD_HEIGHT; j++) {

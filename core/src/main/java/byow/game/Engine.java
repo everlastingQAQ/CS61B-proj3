@@ -316,7 +316,7 @@ public class Engine {
         collectedCount = 0;
 
         // 初始化视野范围
-        visionRadius = 5;
+        visionRadius = 7;
 
         // 更改游戏状态
         state = GameState.PLAYING;
