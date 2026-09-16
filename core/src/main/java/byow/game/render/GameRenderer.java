@@ -58,7 +58,7 @@ public class GameRenderer {
         switch (engine.state()) {
             case PLAYING -> {
                 useWorldViewPoint();
-                worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items());
+                worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items(), engine.visible());
 
                 fogRenderer.render(engine.visible(), engine.explored());
 

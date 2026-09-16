@@ -64,7 +64,7 @@ public class WorldRenderer {
      * @param world 当前世界
      * @param player 当前玩家
      */
-    public void render(TETile[][] world, Player player, Monster monster, List<Item> items) {
+    public void render(TETile[][] world, Player player, Monster monster, List<Item> items, boolean[][] visible) {
 
         // 镜头跟随玩家
         updateCamera(world, player);
@@ -95,12 +95,18 @@ public class WorldRenderer {
 
         // 画物品的字符
         for (Item item : items) {
+            if (!visible[item.x()][item.y()]) {
+                continue;
+            }
+
             TETile appearance = Itemset.get(item.type());
             tileRenderer.drawCharacter(appearance, item.x(), item.y());
         }
 
         // 画怪物
-        tileRenderer.drawCharacter(Tileset.MONSTER, monster.x(), monster.y());
+        if (visible[monster.x()][monster.y()]) {
+            tileRenderer.drawCharacter(Tileset.MONSTER, monster.x(), monster.y());
+        }
 
         // 画玩家
         tileRenderer.drawCharacter(Tileset.AVATAR, player.x(), player.y());

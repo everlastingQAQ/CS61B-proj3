@@ -23,6 +23,10 @@ public class Visioncauculate {
 
     private static int[][] moveTo = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
+
+    // 只用于补全斜方向的墙角
+    private static final int[][] DIAGONAL_DIRECTIONS = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+
     /**
      * 计算那哪些范围可视
      * @param world 传入世界
@@ -49,6 +53,24 @@ public class Visioncauculate {
 
             if (!TileRules.isTransparent(world[p.x][p.y])) {
                 continue;
+            }
+
+            // 当前格没有到达视野边界时，补全斜方向的墙角
+            if (p.distance < visionRadius) {
+                for (int[] direction : DIAGONAL_DIRECTIONS) {
+                    int cornerX = p.x + direction[0];
+                    int cornerY = p.y + direction[1];
+
+                    // 检查墙角是否越界
+                    if (cornerX < 0 || cornerX >= world.length || cornerY < 0 || cornerY >= world[0].length) {
+                        continue;
+                    }
+
+                    // 如果斜方向是不透明格子，就将墙角设为可见
+                    if (!TileRules.isTransparent(world[cornerX][cornerY])) {
+                        visible[cornerX][cornerY] = true;
+                    }
+                }
             }
 
             for (int i = 0; i < 4; i++) {
