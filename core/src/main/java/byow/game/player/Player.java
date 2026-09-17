@@ -19,6 +19,12 @@ public class Player {
     private int x;
     private int y;
 
+    /** 上次成功移动的横向距离。 */
+    private int lastMoveDx;
+
+    /** 上次成功移动的纵向距离。 */
+    private int lastMoveDy;
+
     /**
      * 初始化玩家
      * 1. 随机化玩家出生位置
@@ -67,6 +73,16 @@ public class Player {
         return y;
     }
 
+    /** 返回上次成功移动的横向距离。 */
+    public int lastMoveDx() {
+        return lastMoveDx;
+    }
+
+    /** 返回上次成功移动的纵向距离。 */
+    public int lastMoveDy() {
+        return lastMoveDy;
+    }
+
     /**
      * 判断可以走的位置
      * @param world 传入当前世界
@@ -87,42 +103,42 @@ public class Player {
     }
 
     /**
-     * 移动玩家:
-     * 1. 判断能否移动
-     * 2. 改变世界
-     * 3. 更新坐标
-     * @param world 游戏世界
-     * @return 返回是否移动成功
+     * 向指定方向移动，并记录成功移动的方向。
+     *
+     * @param world 当前世界
+     * @param dx 横向移动距离
+     * @param dy 纵向移动距离
+     * @return 是否移动成功
      */
-    public boolean moveUp(TETile[][] world) {
-        if (!isWalkable(world, x, y + 1)) {
+    private boolean move(TETile[][] world, int dx, int dy) {
+        // 移动失败时保留原位置和上一次成功移动方向。
+        if (!isWalkable(world, x + dx, y + dy)) {
             return false;
         }
-        y++;
+
+        // 更新玩家位置。
+        x += dx;
+        y += dy;
+
+        // 记录方向，供 Ambusher 预测玩家前方位置。
+        lastMoveDx = dx;
+        lastMoveDy = dy;
         return true;
+    }
+
+    public boolean moveUp(TETile[][] world) {
+        return move(world, 0, 1);
     }
 
     public boolean moveDown(TETile[][] world) {
-        if (!isWalkable(world, x, y - 1)) {
-            return false;
-        }
-        y--;
-        return true;
+        return move(world, 0, -1);
     }
 
     public boolean moveLeft(TETile[][] world) {
-        if (!isWalkable(world, x - 1, y)) {
-            return false;
-        }
-        x--;
-        return true;
+        return move(world, -1, 0);
     }
 
     public boolean moveRight(TETile[][] world) {
-        if (!isWalkable(world, x + 1, y)) {
-            return false;
-        }
-        x++;
-        return true;
+        return move(world, 1, 0);
     }
 }

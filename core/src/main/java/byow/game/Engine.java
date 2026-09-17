@@ -1,6 +1,6 @@
 package byow.game;
 
-import byow.game.pathfinder.Pathfinder;
+import byow.game.monster.MonsterController;
 import byow.game.item.Item;
 import byow.game.itemGenerator.ItemGenerator;
 import byow.game.monster.Monster;
@@ -14,6 +14,7 @@ import byow.game.worldGenerator.WorldGenerator;
 import java.util.*;
 
 import static byow.game.GameConfig.ITEM_NUMBER;
+import static byow.game.monster.MonsterType.*;
 import static byow.game.tile.TileConverter.toTETile;
 import static byow.game.tile.TileConverter.toTileType;
 
@@ -34,6 +35,9 @@ public class Engine {
 
     /** 当前唯一怪物 */
     Monster monster;
+
+    /** 怪物管理。 */
+    private final MonsterController monsterController = new MonsterController();
 
     /** 当前拥有的物品数。 */
     private int collectedCount;
@@ -252,7 +256,6 @@ public class Engine {
         int y = player.y();
 
         Item collectItem = null;
-
         for (Item item : items) {
             if (item.x() == x && item.y() == y) {
                 collectItem = item;
@@ -278,16 +281,7 @@ public class Engine {
 
     // 处理怪物交互
     private void resolveMonsterInteractions() {
-        moveMonsterOnce();
-    }
-
-    // 怪物移动一步
-    private void moveMonsterOnce() {
-        Pathfinder.Position next = Pathfinder.nextStep(world, monster.x(), monster.y(), player.x(), player().y());
-
-        if (next == null) return;
-
-        monster.moveTo(next.x(), next.y());
+        monsterController.takeTurn(world, monster, player);
     }
 
     // =====================
@@ -334,7 +328,7 @@ public class Engine {
         items = ItemGenerator.generate(world, player, random);
 
         // 创建怪物
-        monster = new Monster(world, random, player);
+        monster = new Monster(world, random, player, GUARDIAN);
 
         // 初始化物品数量
         collectedCount = 0;
@@ -396,8 +390,8 @@ public class Engine {
         // 加载物品
         this.items = new ArrayList<>();
 
-        // 加载怪物
-        this.monster = new Monster(gamesave.monsterData().x(), gamesave.monsterData().y());
+//        // 加载怪物
+//        this.monster = new Monster(gamesave.monsterData().x(), gamesave.monsterData().y());
 
         // 加载物品栏
         for (ItemData data : gamesave.items()) {
@@ -418,6 +412,10 @@ public class Engine {
 
         // 加载已探索区域
         this.explored = copyGrid(gamesave.explored());
+
+        // 加载玩家可视范围
+        this.visible = new boolean[world.length][world[0].length];
+        updateVision();
     }
 
     /**

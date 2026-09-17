@@ -1,6 +1,7 @@
 package byow.game.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -53,7 +54,7 @@ public class FontManager {
         // 创建 FreeType 字体生成器。
         FreeTypeFontGenerator generator =
             new FreeTypeFontGenerator(
-                Gdx.files.internal(path)
+                resolveAsset(path)
             );
 
         // 创建字体生成参数对象。
@@ -100,7 +101,7 @@ public class FontManager {
         // 读取 tile 专用 TTF 字体
         FreeTypeFontGenerator generator =
             new FreeTypeFontGenerator(
-                Gdx.files.internal(path)
+                resolveAsset(path)
             );
 
         // 创建 tile 字体的生成参数。
@@ -127,6 +128,26 @@ public class FontManager {
 
         // 返回生成好的 BitmapFont。
         return font;
+    }
+
+    /**
+     * 根据不同启动目录查找资源文件。
+     *
+     * Gradle 从 assets 目录运行时直接使用原路径；IntelliJ 从项目根目录
+     * 运行时使用 assets 前缀，避免要求用户修改运行配置。
+     *
+     * @param path 相对于 assets 目录的资源路径
+     * @return 可以读取的资源文件
+     */
+    private static FileHandle resolveAsset(String path) {
+        // 优先使用 LibGDX 标准资源路径，兼容 Gradle 和打包运行。
+        FileHandle file = Gdx.files.internal(path);
+        if (file.exists()) {
+            return file;
+        }
+
+        // IntelliJ 从项目根目录运行时，资源位于 assets 子目录。
+        return Gdx.files.internal("assets/" + path);
     }
 
     public BitmapFont title() {
