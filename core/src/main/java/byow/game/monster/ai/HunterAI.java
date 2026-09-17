@@ -8,9 +8,6 @@ import byow.game.tile.TETile;
 /** 锁定玩家位置，并通过 BFS 持续追踪两回合的怪物 AI。 */
 public class HunterAI implements MonsterAI {
 
-    /** 每次锁定玩家位置后持续追踪的回合数。 */
-    private static final int COMMITMENT_TURNS = 2;
-
     /**
      * 返回怪物向当前承诺目标移动的下一步。
      *
@@ -25,26 +22,12 @@ public class HunterAI implements MonsterAI {
         Monster monster,
         Player player
     ) {
-        // 旧目标到期后，记录玩家当前的位置作为新的追踪目标。
-        if (!monster.hasCommittedTarget()) {
-            monster.commitTarget(
-                player.x(),
-                player.y(),
-                COMMITMENT_TURNS
-            );
-        }
-
-        // 使用允许掉头的普通 BFS，避免目标承诺和禁止掉头相互叠加。
-        Pathfinder.Position next = Pathfinder.nextStep(
+        return CommittedChase.nextStep(
             world,
-            monster.x(),
-            monster.y(),
-            monster.committedTargetX(),
-            monster.committedTargetY()
+            monster,
+            player.x(),
+            player.y(),
+            false
         );
-
-        // 无论本回合是否找到路径，都消耗一个目标承诺回合。
-        monster.consumeCommitmentTurn();
-        return next;
     }
 }

@@ -6,4 +6,12 @@ package byow.game.save;
  * @author everlasting
  *
  */
-public record PlayerData(int x, int y) {}
+public record PlayerData(
+    int x,
+    int y,
+    int lastMoveDx,
+    int lastMoveDy,
+    int currentHp,
+    int maxHp,
+    int shieldCharges
+) {}

@@ -14,6 +14,18 @@ public class GameConfig {
 
     public static final int ITEM_NUMBER = 5;
 
+    /** 激活出口所需的遗物数量。 */
+    public static final int REQUIRED_ITEM_COUNT = 3;
+
+    /** 玩家没有 Vision Buff 时的基础视野半径。 */
+    public static final int DEFAULT_VISION_RADIUS = 7;
+
+    /** 玩家初始和默认最大生命值。 */
+    public static final int PLAYER_MAX_HP = 3;
+
+    /** 一只怪物接触玩家时造成的伤害。 */
+    public static final int MONSTER_CONTACT_DAMAGE = 1;
+
     public static float getTileSize() {
 //        return Math.min (
 //            WINDOW_WIDTH / WORLD_WIDTH,

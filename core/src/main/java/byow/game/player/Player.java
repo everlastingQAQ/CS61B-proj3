@@ -4,6 +4,8 @@ import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
 import byow.game.tile.TileRules;
 
+import static byow.game.GameConfig.PLAYER_MAX_HP;
+
 /**
  * 玩家属性
  * 1. 当前位置横坐标
@@ -25,6 +27,15 @@ public class Player {
     /** 上次成功移动的纵向距离。 */
     private int lastMoveDy;
 
+    /** 玩家当前生命值。 */
+    private int currentHp;
+
+    /** 玩家最大生命值。 */
+    private int maxHp;
+
+    /** 可以抵挡怪物伤害的剩余次数。 */
+    private int shieldCharges;
+
     /**
      * 初始化玩家
      * 1. 随机化玩家出生位置
@@ -45,6 +56,8 @@ public class Player {
 
         this.x = originX;
         this.y = originY;
+        this.currentHp = PLAYER_MAX_HP;
+        this.maxHp = PLAYER_MAX_HP;
     }
 
     /**
@@ -54,13 +67,56 @@ public class Player {
      * @param world 玩家的世界
      */
     public Player(TETile[][] world, int x, int y) {
+        this(world, x, y, 0, 0);
+    }
+
+    /** 从存档恢复玩家位置和最近一次成功移动方向。 */
+    public Player(TETile[][] world, int x, int y, int lastMoveDx, int lastMoveDy) {
+        this(world, x, y, lastMoveDx, lastMoveDy, PLAYER_MAX_HP, PLAYER_MAX_HP);
+    }
+
+    /** 从存档恢复玩家位置、移动方向和生命值。 */
+    public Player(
+        TETile[][] world,
+        int x,
+        int y,
+        int lastMoveDx,
+        int lastMoveDy,
+        int currentHp,
+        int maxHp
+    ) {
+        this(world, x, y, lastMoveDx, lastMoveDy, currentHp, maxHp, 0);
+    }
+
+    /** 从存档恢复玩家位置、移动方向、生命值和护盾。 */
+    public Player(
+        TETile[][] world,
+        int x,
+        int y,
+        int lastMoveDx,
+        int lastMoveDy,
+        int currentHp,
+        int maxHp,
+        int shieldCharges
+    ) {
         if (!isWalkable(world, x, y)) {
             throw new IllegalArgumentException(
                 "Player position is not walkable"
             );
         }
+        if (maxHp <= 0 || currentHp < 0 || currentHp > maxHp) {
+            throw new IllegalArgumentException("Invalid player health");
+        }
+        if (shieldCharges < 0) {
+            throw new IllegalArgumentException("Invalid shield charges");
+        }
         this.x = x;
         this.y = y;
+        this.lastMoveDx = lastMoveDx;
+        this.lastMoveDy = lastMoveDy;
+        this.currentHp = currentHp;
+        this.maxHp = maxHp;
+        this.shieldCharges = shieldCharges;
     }
 
     // 取得玩家现在横坐标位置
@@ -81,6 +137,75 @@ public class Player {
     /** 返回上次成功移动的纵向距离。 */
     public int lastMoveDy() {
         return lastMoveDy;
+    }
+
+    /** 返回玩家当前生命值。 */
+    public int currentHp() {
+        return currentHp;
+    }
+
+    /** 返回玩家最大生命值。 */
+    public int maxHp() {
+        return maxHp;
+    }
+
+    /** 返回玩家剩余的护盾次数。 */
+    public int shieldCharges() {
+        return shieldCharges;
+    }
+
+    /**
+     * 恢复玩家生命值，但不会超过最大生命值。
+     *
+     * @param amount 恢复的生命值
+     */
+    public void heal(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Heal amount cannot be negative");
+        }
+        currentHp = Math.min(maxHp, currentHp + amount);
+    }
+
+    /**
+     * 增加可以抵挡怪物伤害的次数。
+     *
+     * @param charges 增加的护盾次数
+     */
+    public void grantShield(int charges) {
+        if (charges < 0) {
+            throw new IllegalArgumentException("Shield charges cannot be negative");
+        }
+        shieldCharges += charges;
+    }
+
+    /**
+     * 尝试消耗一层护盾。
+     *
+     * @return 成功抵挡伤害时返回 true；没有护盾时返回 false
+     */
+    public boolean consumeShield() {
+        if (shieldCharges == 0) {
+            return false;
+        }
+        shieldCharges--;
+        return true;
+    }
+
+    /**
+     * 扣除玩家生命值，并保证生命值不会低于 0。
+     *
+     * @param amount 受到的伤害
+     */
+    public void takeDamage(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Damage cannot be negative");
+        }
+        currentHp = Math.max(0, currentHp - amount);
+    }
+
+    /** 返回玩家是否仍然存活。 */
+    public boolean isAlive() {
+        return currentHp > 0;
     }
 
     /**

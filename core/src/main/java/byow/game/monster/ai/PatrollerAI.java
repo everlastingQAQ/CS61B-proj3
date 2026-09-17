@@ -42,15 +42,13 @@ public class PatrollerAI implements MonsterAI {
             return null;
         }
 
-        // 沿最短路径前往当前端点，并避免立即掉头。
+        // 沿普通最短路径前往当前端点。
         return Pathfinder.nextStep(
             world,
             monster.x(),
             monster.y(),
             targetX,
-            targetY,
-            monster.previousX(),
-            monster.previousY()
+            targetY
         );
     }
 

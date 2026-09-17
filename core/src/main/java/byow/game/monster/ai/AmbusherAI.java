@@ -42,15 +42,13 @@ public class AmbusherAI implements MonsterAI {
             targetY = nextY;
         }
 
-        // 追踪预测位置，并禁止第一步立即掉头。
-        return Pathfinder.nextStep(
+        // 预测机制保持不变，但预测位置会被锁定两回合。
+        return CommittedChase.nextStep(
             world,
-            monster.x(),
-            monster.y(),
+            monster,
             targetX,
             targetY,
-            monster.previousX(),
-            monster.previousY()
+            false
         );
     }
 

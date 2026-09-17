@@ -9,17 +9,14 @@ import byow.game.tile.TETile;
 /** 守护固定位置，并在玩家靠近时追击的怪物 AI。 */
 public class GuardianAI implements MonsterAI {
 
-    /** 每次锁定玩家位置后持续追踪的回合数。 */
-    private static final int COMMITMENT_TURNS = 2;
-
     /** 玩家进入追击状态的距离。 */
     private static final int ALERT_DISTANCE = 10;
 
     /** 玩家离开追击状态的距离。 */
-    private static final int DISENGAGE_DISTANCE = 25;
+    private static final int DISENGAGE_DISTANCE = 20;
 
     /** 怪物离开守护位置的最大距离。 */
-    private static final int LEASH_DISTANCE = 25;
+    private static final int LEASH_DISTANCE = 20;
 
     /**
      * 根据玩家和守护位置的距离切换状态，并返回下一步。
@@ -64,44 +61,26 @@ public class GuardianAI implements MonsterAI {
 
         // 追击状态锁定玩家位置两回合，再更新目标。
         if (monster.state() == MonsterState.CHASING) {
-            return chasePlayer(world, monster, player, wasChasing);
+            return CommittedChase.nextStep(
+                world,
+                monster,
+                player.x(),
+                player.y(),
+                !wasChasing
+            );
         }
 
         // 非追击状态返回守护点；已经到达时停止移动。
         if (homeDistance == 0) {
             return null;
         }
-        return moveToward(world, monster, monster.homeX(), monster.homeY());
-    }
-
-    /** 锁定玩家位置两回合，并返回前往该位置的下一步。 */
-    private static Pathfinder.Position chasePlayer(
-        TETile[][] world,
-        Monster monster,
-        Player player,
-        boolean wasChasing
-    ) {
-        // 刚进入追击状态或旧目标到期时，记录玩家当前位置。
-        if (!wasChasing || !monster.hasCommittedTarget()) {
-            monster.commitTarget(
-                player.x(),
-                player.y(),
-                COMMITMENT_TURNS
-            );
-        }
-
-        // 追击时允许掉头，避免与目标承诺叠加后产生过长绕路。
-        Pathfinder.Position next = Pathfinder.nextStep(
+        return Pathfinder.nextStep(
             world,
             monster.x(),
             monster.y(),
-            monster.committedTargetX(),
-            monster.committedTargetY()
+            monster.homeX(),
+            monster.homeY()
         );
-
-        // 完成本回合决策后，消耗一个目标承诺回合。
-        monster.consumeCommitmentTurn();
-        return next;
     }
 
     /** 根据警戒范围和活动范围更新怪物状态。 */
@@ -116,6 +95,7 @@ public class GuardianAI implements MonsterAI {
                 || playerDistance >= DISENGAGE_DISTANCE
                 || homeDistance >= LEASH_DISTANCE) {
                 monster.setState(MonsterState.IDLE);
+                monster.clearCommittedTarget();
             }
             return;
         }
@@ -128,22 +108,4 @@ public class GuardianAI implements MonsterAI {
         }
     }
 
-    /** 返回前往指定目标的下一步。 */
-    private static Pathfinder.Position moveToward(
-        TETile[][] world,
-        Monster monster,
-        int targetX,
-        int targetY
-    ) {
-        // 返回过程中同样禁止第一步立即掉头。
-        return Pathfinder.nextStep(
-            world,
-            monster.x(),
-            monster.y(),
-            targetX,
-            targetY,
-            monster.previousX(),
-            monster.previousY()
-        );
-    }
 }

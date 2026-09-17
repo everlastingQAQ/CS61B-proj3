@@ -10,12 +10,21 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
  * 统一管理游戏中使用的所有字体。
  */
 public class FontManager {
+    /** 左下角日志会使用到的中文字符。 */
+    private static final String HUD_MESSAGE_CHARACTERS =
+        FreeTypeFontGenerator.DEFAULT_CHARS
+            + "发现会锁定你的位置回合并通过追踪预测移动方向前方最多格"
+            + "靠近守护点时开始在两个远端之间巡逻逃跑拉开距离后"
+            + "附近有拾取激活第件获得：，；。、";
 
     // 标题字体。
     private final BitmapFont titleFont;
 
     // 普通 UI 字体。
     private final BitmapFont bodyFont;
+
+    // 左下角中文日志字体。
+    private final BitmapFont messageFont;
 
     // 地图 tile 专用字体。
     private final BitmapFont tileFont;
@@ -31,6 +40,13 @@ public class FontManager {
         bodyFont = createFont(
             "font/JetBrainsMonoNL-Regular.ttf",
             24
+        );
+
+        // 中文说明使用 Noto Sans SC，专有名词仍使用英文。
+        messageFont = createFont(
+            "font/NotoSansSC-VF.ttf",
+            22,
+            HUD_MESSAGE_CHARACTERS
         );
 
         // 生成地图 tile 字体。
@@ -50,6 +66,13 @@ public class FontManager {
      * @return 可以直接用于 SpriteBatch 绘制的 BitmapFont
      */
     private BitmapFont createFont(String path, int size) {
+        return createFont(path, size, FreeTypeFontGenerator.DEFAULT_CHARS);
+    }
+
+    /**
+     * 生成只包含指定字符的 UI 字体，避免把完整 CJK 字符集放进纹理。
+     */
+    private BitmapFont createFont(String path, int size, String characters) {
 
         // 创建 FreeType 字体生成器。
         FreeTypeFontGenerator generator =
@@ -63,6 +86,7 @@ public class FontManager {
 
         // 设置实际生成字体的像素大小。
         parameter.size = size;
+        parameter.characters = characters;
 
         // 设置字体纹理缩小时的过滤方式。
         //
@@ -158,6 +182,10 @@ public class FontManager {
         return bodyFont;
     }
 
+    public BitmapFont message() {
+        return messageFont;
+    }
+
     public BitmapFont tile() {
         return tileFont;
     }
@@ -165,6 +193,7 @@ public class FontManager {
     public void dispose() {
         titleFont.dispose();
         bodyFont.dispose();
+        messageFont.dispose();
         tileFont.dispose();
     }
 }

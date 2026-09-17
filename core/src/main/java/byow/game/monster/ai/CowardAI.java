@@ -34,6 +34,8 @@ public class CowardAI implements MonsterAI {
         Monster monster,
         Player player
     ) {
+        boolean wasChasing = monster.state() == MonsterState.CHASING;
+
         // 使用真实路径距离判断状态，避免墙壁干扰距离判断。
         int distance = Pathfinder.distance(
             world,
@@ -51,32 +53,23 @@ public class CowardAI implements MonsterAI {
         // 两个阈值之间保持原状态，避免反复切换。
         if (distance <= FLEE_DISTANCE) {
             monster.setState(MonsterState.FLEEING);
+            if (wasChasing) {
+                monster.clearCommittedTarget();
+            }
         } else if (distance >= CHASE_DISTANCE) {
             monster.setState(MonsterState.CHASING);
         }
 
         // 根据当前状态选择追击或逃跑行为。
         if (monster.state() == MonsterState.FLEEING) {
-            return flee(world, monster, player, true);
+            return flee(world, monster, player);
         }
-        return chase(world, monster, player);
-    }
-
-    /** 返回通往玩家当前位置的下一步。 */
-    private static Pathfinder.Position chase(
-        TETile[][] world,
-        Monster monster,
-        Player player
-    ) {
-        // 追击逻辑与 Hunter 相同，并遵守不能立即掉头的规则。
-        return Pathfinder.nextStep(
+        return CommittedChase.nextStep(
             world,
-            monster.x(),
-            monster.y(),
+            monster,
             player.x(),
             player.y(),
-            monster.previousX(),
-            monster.previousY()
+            !wasChasing
         );
     }
 
@@ -84,8 +77,7 @@ public class CowardAI implements MonsterAI {
     private static Pathfinder.Position flee(
         TETile[][] world,
         Monster monster,
-        Player player,
-        boolean avoidPrevious
+        Player player
     ) {
         Pathfinder.Position best = null;
         int bestDistance = -1;
@@ -100,11 +92,6 @@ public class CowardAI implements MonsterAI {
                 continue;
             }
 
-            // 优先排除上一格，避免怪物立即掉头。
-            if (avoidPrevious && nextX == monster.previousX() && nextY == monster.previousY()) {
-                continue;
-            }
-
             // BFS 距离越大，该位置越适合作为逃跑方向。
             int distance = Pathfinder.distance(world, nextX, nextY, player.x(), player.y());
             if (distance > bestDistance) {
@@ -113,10 +100,6 @@ public class CowardAI implements MonsterAI {
             }
         }
 
-        // 死路中没有其他选择时，允许怪物返回上一格。
-        if (best == null && avoidPrevious) {
-            return flee(world, monster, player, false);
-        }
         return best;
     }
 }

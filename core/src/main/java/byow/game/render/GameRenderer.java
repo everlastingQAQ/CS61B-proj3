@@ -58,13 +58,30 @@ public class GameRenderer {
         switch (engine.state()) {
             case PLAYING -> {
                 useWorldViewPoint();
-                worldRenderer.render(engine.world(), engine.player(), engine.monster(), engine.items(), engine.visible());
+                worldRenderer.render(
+                    engine.world(),
+                    engine.player(),
+                    engine.monsters(),
+                    engine.items(),
+                    engine.visible()
+                );
 
                 fogRenderer.render(engine.visible(), engine.explored());
 
                 useFullViewport();
                 useUiCamera();
-                hudRenderer.render(engine.CollectedCount(), ITEM_NUMBER);
+                hudRenderer.render(
+                    engine.player().currentHp(),
+                    engine.player().maxHp(),
+                    engine.collectedCount(),
+                    REQUIRED_ITEM_COUNT,
+                    engine.player().shieldCharges(),
+                    engine.frozenMonsterTurns(),
+                    engine.visionRadius() - DEFAULT_VISION_RADIUS,
+                    engine.radarActive(),
+                    engine.monsterNoticeType(),
+                    engine.nearbyItem()
+                );
             }
 
             case MENU -> {
