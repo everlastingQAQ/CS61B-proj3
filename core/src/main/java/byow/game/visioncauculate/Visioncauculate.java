@@ -24,9 +24,6 @@ public class Visioncauculate {
     private static int[][] moveTo = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
 
-    // 只用于补全斜方向的墙角
-    private static final int[][] DIAGONAL_DIRECTIONS = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
-
     /**
      * 计算那哪些范围可视
      * @param world 传入世界
@@ -55,24 +52,6 @@ public class Visioncauculate {
                 continue;
             }
 
-            // 当前格没有到达视野边界时，补全斜方向的墙角
-            if (p.distance < visionRadius) {
-                for (int[] direction : DIAGONAL_DIRECTIONS) {
-                    int cornerX = p.x + direction[0];
-                    int cornerY = p.y + direction[1];
-
-                    // 检查墙角是否越界
-                    if (cornerX < 0 || cornerX >= world.length || cornerY < 0 || cornerY >= world[0].length) {
-                        continue;
-                    }
-
-                    // 如果斜方向是不透明格子，就将墙角设为可见
-                    if (!TileRules.isTransparent(world[cornerX][cornerY])) {
-                        visible[cornerX][cornerY] = true;
-                    }
-                }
-            }
-
             for (int i = 0; i < 4; i++) {
                 int nextX = p.x + moveTo[i][0];
                 int nextY = p.y + moveTo[i][1];
@@ -90,6 +69,44 @@ public class Visioncauculate {
             }
         }
 
+        revealBoundaryWalls(world, visible);
+
         return visible;
+    }
+
+    /**
+     * 补全可见地面周围八方向的墙体。独立于 BFS 半径边界执行，避免
+     * 房间拐角因为刚好处于视野边缘而被雾层遮掉。
+     */
+    private static void revealBoundaryWalls(TETile[][] world, boolean[][] visible) {
+        boolean[][] boundaryWalls = new boolean[world.length][world[0].length];
+
+        for (int x = 0; x < world.length; x++) {
+            for (int y = 0; y < world[0].length; y++) {
+                if (!visible[x][y] || !TileRules.isTransparent(world[x][y])) {
+                    continue;
+                }
+
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        int wallX = x + dx;
+                        int wallY = y + dy;
+                        if (wallX < 0 || wallX >= world.length
+                            || wallY < 0 || wallY >= world[0].length) {
+                            continue;
+                        }
+                        if (!TileRules.isTransparent(world[wallX][wallY])) {
+                            boundaryWalls[wallX][wallY] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < world.length; x++) {
+            for (int y = 0; y < world[0].length; y++) {
+                visible[x][y] |= boundaryWalls[x][y];
+            }
+        }
     }
 }

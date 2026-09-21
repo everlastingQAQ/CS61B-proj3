@@ -1,11 +1,14 @@
 package byow.game.render.world;
 
 import byow.game.GameConfig;
+import byow.game.GameExit;
 import byow.game.item.Item;
 import byow.game.monster.Monster;
 import byow.game.monster.MonsterAppearance;
 import byow.game.player.Player;
 import byow.game.render.FontManager;
+import byow.game.scene.SceneObject;
+import byow.game.scene.SceneObjectAppearance;
 import byow.game.item.Itemset;
 import byow.game.tile.TETile;
 import byow.game.tile.Tileset;
@@ -14,8 +17,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.*;
+
+import static byow.game.GameConfig.HUD_HEIGHT;
 
 /**
  * 负责渲染一个世界
@@ -70,6 +76,8 @@ public class WorldRenderer {
         Player player,
         List<Monster> monsters,
         List<Item> items,
+        List<SceneObject> sceneObjects,
+        GameExit exit,
         boolean[][] visible
     ) {
 
@@ -97,6 +105,23 @@ public class WorldRenderer {
         for (int x = 0; x < world.length; x++) {
             for (int y = 0; y < world[0].length; y++) {
                 tileRenderer.drawCharacter(world[x][y], x, y);
+            }
+        }
+
+        // 出口是独立的玩法对象：即使尚未收集足够遗物，也要在进入
+        // 玩家视野后显式绘制，不能依赖它恰好仍保存在底层地块中。
+        if (exit != null && visible[exit.x()][exit.y()]) {
+            tileRenderer.drawCharacter(exit.appearance(), exit.x(), exit.y());
+        }
+
+        // 画功能性场景物件；被使用的一次性物件不再显示。
+        for (SceneObject object : sceneObjects) {
+            if (object.active() && visible[object.x()][object.y()]) {
+                tileRenderer.drawCharacter(
+                    SceneObjectAppearance.get(object.type()),
+                    object.x(),
+                    object.y()
+                );
             }
         }
 
@@ -141,6 +166,60 @@ public class WorldRenderer {
         // 更新 camera
         camera.update();
     }
+
+    /**
+     * 把鼠标屏幕坐标转换为当前可见的世界格。
+     * 顶部 HUD 和迷雾中的格子不会触发悬停。
+     */
+    public GridPosition tileAtScreen(
+        boolean[][] visible,
+        int screenX,
+        int screenY
+    ) {
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+        int worldViewportHeight = screenHeight - HUD_HEIGHT;
+
+        if (screenX < 0 || screenX >= screenWidth
+            || screenY < HUD_HEIGHT || screenY >= screenHeight) {
+            return null;
+        }
+
+        float mouseYFromBottom = screenHeight - screenY;
+        float projectedTileSize = worldViewportHeight
+            / (float) GameConfig.CAMERA_VISIBLE_TILES_Y;
+        float halfTile = projectedTileSize / 2f;
+        Vector3 tileCenter = new Vector3();
+
+        // 只投影当前可见格。与实际渲染使用同一个 camera，可以避开
+        // Wayland/高 DPI 环境中输入坐标反投影不一致的问题。
+        for (int x = 0; x < visible.length; x++) {
+            for (int y = 0; y < visible[0].length; y++) {
+                if (!visible[x][y]) {
+                    continue;
+                }
+                tileCenter.set(
+                    (x + 0.5f) * tileSize,
+                    (y + 0.5f) * tileSize,
+                    0f
+                );
+                camera.project(
+                    tileCenter,
+                    0,
+                    0,
+                    screenWidth,
+                    worldViewportHeight
+                );
+                if (Math.abs(screenX - tileCenter.x) <= halfTile
+                    && Math.abs(mouseYFromBottom - tileCenter.y) <= halfTile) {
+                    return new GridPosition(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    public record GridPosition(int x, int y) {}
 
     /**
      * 根据玩家当前位置更新 camera 视觉中心

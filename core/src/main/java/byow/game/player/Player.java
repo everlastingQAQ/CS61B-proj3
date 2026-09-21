@@ -266,4 +266,14 @@ public class Player {
     public boolean moveRight(TETile[][] world) {
         return move(world, 1, 0);
     }
+
+    /** 将玩家传送到合法地格，不改变最近一次主动移动方向。 */
+    public boolean teleportTo(TETile[][] world, int targetX, int targetY) {
+        if (!isWalkable(world, targetX, targetY)) {
+            return false;
+        }
+        x = targetX;
+        y = targetY;
+        return true;
+    }
 }

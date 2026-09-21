@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** 验证新增 Buff 状态的序列化和旧存档默认值。 */
@@ -28,7 +29,9 @@ class SaveDataCompatibilityTest {
             6L,
             2,
             true,
-            List.of(MonsterType.HUNTER)
+            List.of(MonsterType.HUNTER),
+            new ExitData(8, 9, true),
+            List.of()
         );
 
         GameSave restored = gson.fromJson(gson.toJson(original), GameSave.class);
@@ -37,6 +40,7 @@ class SaveDataCompatibilityTest {
         assertEquals(2, restored.frozenMonsterTurns());
         assertTrue(restored.radarActive());
         assertEquals(List.of(MonsterType.HUNTER), restored.seenMonsterTypes());
+        assertEquals(new ExitData(8, 9, true), restored.exit());
     }
 
     @Test
@@ -50,5 +54,7 @@ class SaveDataCompatibilityTest {
         assertEquals(0, oldPlayer.shieldCharges());
         assertEquals(0, oldGame.frozenMonsterTurns());
         assertFalse(oldGame.radarActive());
+        assertNull(oldGame.exit());
+        assertNull(oldGame.sceneObjects());
     }
 }

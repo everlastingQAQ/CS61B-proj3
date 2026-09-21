@@ -9,23 +9,23 @@ public final class MonsterAppearance {
     private static final Color BACKGROUND = new Color(45, 55, 70);
 
     public static final TETile HUNTER = new TETile(
-        'H', new Color(255, 80, 80), BACKGROUND, "hunter"
+        'H', new Color(255, 80, 80), BACKGROUND, "猎手"
     );
 
     public static final TETile AMBUSHER = new TETile(
-        'A', new Color(210, 100, 255), BACKGROUND, "ambusher"
+        'A', new Color(210, 100, 255), BACKGROUND, "伏击者"
     );
 
     public static final TETile GUARDIAN = new TETile(
-        'G', new Color(255, 190, 70), BACKGROUND, "guardian"
+        'G', new Color(255, 190, 70), BACKGROUND, "守卫"
     );
 
     public static final TETile PATROLLER = new TETile(
-        'P', new Color(80, 180, 255), BACKGROUND, "patroller"
+        'P', new Color(80, 180, 255), BACKGROUND, "巡逻者"
     );
 
     public static final TETile COWARD = new TETile(
-        'C', new Color(120, 230, 120), BACKGROUND, "coward"
+        'C', new Color(120, 230, 120), BACKGROUND, "胆小鬼"
     );
 
     /**

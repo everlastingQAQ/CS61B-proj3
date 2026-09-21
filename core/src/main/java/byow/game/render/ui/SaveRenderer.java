@@ -29,7 +29,7 @@ public class SaveRenderer {
         drawCentered(
             batch,
             titleFont,
-            "SAVE GAME",
+            "保存游戏",
             height * 0.82f
         );
 
@@ -38,7 +38,7 @@ public class SaveRenderer {
             drawCentered(
                 batch,
                 bodyFont,
-                "Slot " + slot + " (" + slot + ")",
+                "存档位 " + slot + " (" + slot + ")",
                 height * (0.67f - (slot - 1) * 0.09f)
             );
         }
@@ -47,21 +47,21 @@ public class SaveRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "Press 1-5 to save",
+            "按 1-5 选择存档位",
             height * 0.18f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Saving replaces the existing save in that slot.",
+            "保存会覆盖该位置已有的存档。",
             height * 0.11f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Back (B)",
+            "返回 (B)",
             height * 0.07f
         );
 

@@ -47,7 +47,7 @@ public class SeedRenderer {
         drawCentered(
             batch,
             titleFont,
-            "Enter a seed",
+            "输入世界种子",
             height * 0.70f
         );
 
@@ -63,14 +63,14 @@ public class SeedRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "Press S to start",
+            "按 S 开始游戏",
             height * 0.35f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Back (B)",
+            "返回 (B)",
             height * 0.27f
         );
 

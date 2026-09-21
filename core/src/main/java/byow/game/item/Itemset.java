@@ -14,19 +14,19 @@ public class Itemset {
 
     // 规定物品样式
     public static final TETile CRYSTAL =
-        new TETile('*', Color.cyan, Color.black, "CRYSTAL");
+        new TETile('*', Color.cyan, Color.black, "水晶");
 
     public static final TETile COIN =
-        new TETile('$', Color.yellow, Color.black, "COIN");
+        new TETile('$', Color.yellow, Color.black, "金币");
 
     public static final TETile KEY =
-        new TETile('k', new Color(255, 165, 0), Color.black, "KEY");
+        new TETile('k', new Color(255, 165, 0), Color.black, "钥匙");
 
     public static final TETile ORB =
-        new TETile('o', Color.magenta, Color.black, "ORB");
+        new TETile('o', Color.magenta, Color.black, "宝珠");
 
     public static final TETile RUNE =
-        new TETile('?', Color.white, Color.black, "RUNE");
+        new TETile('?', Color.white, Color.black, "符文");
 
     // 通过类型确定物品的样式
     public static TETile get(ItemType type) {
@@ -42,4 +42,3 @@ public class Itemset {
     private Itemset() {
     }
 }
-

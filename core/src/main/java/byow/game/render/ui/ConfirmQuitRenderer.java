@@ -28,7 +28,7 @@ public class ConfirmQuitRenderer {
         drawCentered(
             batch,
             titleFont,
-            "Save before returning to menu?",
+            "返回主菜单前保存吗？",
             height * 0.70f
         );
 
@@ -36,21 +36,21 @@ public class ConfirmQuitRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "Save and Quit (Y)",
+            "保存并返回 (Y)",
             height * 0.49f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Return Without Saving (N)",
+            "不保存直接返回 (N)",
             height * 0.38f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Back (B)",
+            "返回游戏 (B)",
             height * 0.27f
         );
         batch.end();

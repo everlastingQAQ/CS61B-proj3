@@ -1,7 +1,6 @@
 package byow.game.render.ui;
 
 import byow.game.item.Item;
-import byow.game.item.ItemRules;
 import byow.game.monster.MonsterType;
 import byow.game.render.FontManager;
 import com.badlogic.gdx.Gdx;
@@ -10,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,10 @@ public class HudRenderer {
         new Color(255 / 255f, 130 / 255f, 100 / 255f, 1f);
     private static final Color ITEM_ACCENT =
         new Color(100 / 255f, 220 / 255f, 190 / 255f, 1f);
+    private static final Color TOOLTIP_BACKGROUND =
+        new Color(8 / 255f, 12 / 255f, 20 / 255f, 0.94f);
+    private static final float TOOLTIP_PADDING = 10f;
+    private static final float TOOLTIP_OFFSET = 16f;
 
     private final SpriteBatch batch;
     private final BitmapFont bodyFont;
@@ -59,14 +63,28 @@ public class HudRenderer {
         int frozenMonsterTurns,
         int visionBonus,
         boolean radarActive,
+        String radarDirection,
         MonsterType monsterNoticeType,
-        Item nearbyItem
+        String hoverDescription,
+        Item nearbyItem,
+        int mouseX,
+        int mouseY
     ) {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
         InfoContent info = createInfo(monsterNoticeType, nearbyItem);
+        HoverLayout hover = hoverDescription == null
+            ? null
+            : createHoverLayout(
+                width,
+                height,
+                mouseX,
+                mouseY,
+                new InfoContent(hoverDescription, ITEM_ACCENT)
+            );
 
         drawBackground(width, height);
+        drawHoverBackground(hover);
         drawText(
             width,
             height,
@@ -78,8 +96,45 @@ public class HudRenderer {
             frozenMonsterTurns,
             visionBonus,
             radarActive,
-            info
+            radarDirection,
+            info,
+            hover
         );
+    }
+
+    private HoverLayout createHoverLayout(
+        float screenWidth,
+        float screenHeight,
+        int mouseX,
+        int mouseY,
+        InfoContent content
+    ) {
+        layout.setText(messageFont, content.text());
+        float boxWidth = layout.width + TOOLTIP_PADDING * 2f;
+        float boxHeight = layout.height + TOOLTIP_PADDING * 2f;
+        float worldTop = screenHeight - HUD_HEIGHT;
+        float x = MathUtils.clamp(
+            mouseX + TOOLTIP_OFFSET,
+            8f,
+            Math.max(8f, screenWidth - boxWidth - 8f)
+        );
+        float mouseYFromBottom = screenHeight - mouseY;
+        float y = MathUtils.clamp(
+            mouseYFromBottom + TOOLTIP_OFFSET,
+            8f,
+            Math.max(8f, worldTop - boxHeight - 8f)
+        );
+        return new HoverLayout(content, x, y, boxWidth, boxHeight, layout.height);
+    }
+
+    private void drawHoverBackground(HoverLayout hover) {
+        if (hover == null) {
+            return;
+        }
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(TOOLTIP_BACKGROUND);
+        shapeRenderer.rect(hover.x(), hover.y(), hover.width(), hover.height());
+        shapeRenderer.end();
     }
 
     private void drawBackground(float width, float height) {
@@ -100,15 +155,18 @@ public class HudRenderer {
         int frozenMonsterTurns,
         int visionBonus,
         boolean radarActive,
-        InfoContent info
+        String radarDirection,
+        InfoContent info,
+        HoverLayout hover
     ) {
-        String hpText = "HP  " + currentHp + " / " + maxHp;
-        String itemText = "ITEMS  " + collectedCount + " / " + targetCount;
+        String hpText = "生命  " + currentHp + " / " + maxHp;
+        String itemText = "遗物  " + collectedCount + " / " + targetCount;
         String statusText = createStatusText(
             shieldCharges,
             frozenMonsterTurns,
             visionBonus,
-            radarActive
+            radarActive,
+            radarDirection
         );
 
         batch.begin();
@@ -128,6 +186,9 @@ public class HudRenderer {
         if (info != null) {
             drawInfoText(info);
         }
+        if (hover != null) {
+            drawHoverText(hover);
+        }
         batch.end();
     }
 
@@ -139,29 +200,40 @@ public class HudRenderer {
         messageFont.draw(batch, info.text(), MESSAGE_X, MESSAGE_Y);
     }
 
+    private void drawHoverText(HoverLayout hover) {
+        messageFont.setColor(hover.content().accent());
+        messageFont.draw(
+            batch,
+            hover.content().text(),
+            hover.x() + TOOLTIP_PADDING,
+            hover.y() + TOOLTIP_PADDING + hover.textHeight()
+        );
+    }
+
     private static String createStatusText(
         int shieldCharges,
         int frozenMonsterTurns,
         int visionBonus,
-        boolean radarActive
+        boolean radarActive,
+        String radarDirection
     ) {
         List<String> states = new ArrayList<>();
         if (shieldCharges > 0) {
-            states.add("SHIELD x" + shieldCharges);
+            states.add("护盾 x" + shieldCharges);
         }
         if (frozenMonsterTurns > 0) {
-            states.add("STUN " + frozenMonsterTurns);
+            states.add("冻结 " + frozenMonsterTurns + " 回合");
         }
         if (visionBonus > 0) {
-            states.add("VISION +" + visionBonus);
+            states.add("视野 +" + visionBonus);
         }
         if (radarActive) {
-            states.add("RADAR");
+            states.add("雷达 " + radarDirection);
         }
-        return states.isEmpty() ? "STATUS  NONE" : String.join("   ", states);
+        return states.isEmpty() ? "状态  无" : String.join("   ", states);
     }
 
-    /** 怪物首次提示优先于附近遗物提示。 */
+    /** 左下角保持怪物首次提示优先于附近遗物；悬停使用独立浮层。 */
     private static InfoContent createInfo(
         MonsterType monsterNoticeType,
         Item nearbyItem
@@ -173,38 +245,44 @@ public class HudRenderer {
             );
         }
         if (nearbyItem != null) {
-            ItemRules.Rule rule = ItemRules.ruleFor(nearbyItem.type());
-            return new InfoContent(
-                "附近有 " + displayName(nearbyItem.type())
-                    + "：拾取会激活 " + displayName(rule.monsterType())
-                    + "；第 4、5 件会获得 " + displayName(rule.buffType()) + "。",
-                ITEM_ACCENT
-            );
+            return itemInfo(nearbyItem, true);
         }
         return null;
+    }
+
+    private static InfoContent itemInfo(Item item, boolean nearby) {
+        String prefix = nearby ? "附近有 " : "";
+        return new InfoContent(
+            prefix + HoverDescriptions.itemDescription(item),
+            ITEM_ACCENT
+        );
     }
 
     private static String monsterDescription(MonsterType type) {
         return switch (type) {
             case HUNTER ->
-                "发现 Hunter：会锁定你的位置 2 回合并通过 BFS 追踪。";
+                "发现猎手：会锁定你的位置 2 回合并通过广度优先寻路追踪。";
             case AMBUSHER ->
-                "发现 Ambusher：会预测你移动方向前方最多 3 格。";
+                "发现伏击者：会预测你移动方向前方最多 3 格。";
             case GUARDIAN ->
-                "发现 Guardian：靠近守护点时会开始追击。";
+                "发现守卫：靠近守护点时会开始追击。";
             case PATROLLER ->
-                "发现 Patroller：会在两个远端点之间巡逻。";
+                "发现巡逻者：会在两个远端点之间巡逻。";
             case COWARD ->
-                "发现 Coward：靠近时逃跑，拉开距离后追击。";
+                "发现胆小鬼：靠近时逃跑，拉开距离后追击。";
         };
-    }
-
-    /** 把枚举常量转换为说明文字中使用的英文专有名词。 */
-    private static String displayName(Enum<?> value) {
-        String lower = value.name().toLowerCase();
-        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
     /** 保存左下角单行日志的文字和颜色。 */
     private record InfoContent(String text, Color accent) {}
+
+    /** 保存已经换算到 UI 坐标系的悬停浮层布局。 */
+    private record HoverLayout(
+        InfoContent content,
+        float x,
+        float y,
+        float width,
+        float height,
+        float textHeight
+    ) {}
 }

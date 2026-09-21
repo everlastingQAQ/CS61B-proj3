@@ -5,7 +5,7 @@ import byow.game.item.ItemType;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
 import byow.game.tile.TETile;
-import byow.game.tile.Tileset;
+import byow.game.tile.TileRules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +37,8 @@ public class ItemGenerator {
                 continue;
             }
 
-            // 如果世界板块不是FLOOR, 不允许放置
-            if (!world[x][y].equals(Tileset.FLOOR)) {
+            // 允许普通地面和纯视觉装饰地面承载遗物。
+            if (!TileRules.canHostItem(world[x][y])) {
                 continue;
             }
 

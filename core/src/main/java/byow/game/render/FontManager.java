@@ -2,6 +2,7 @@ package byow.game.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -10,12 +11,24 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
  * 统一管理游戏中使用的所有字体。
  */
 public class FontManager {
-    /** 左下角日志会使用到的中文字符。 */
-    private static final String HUD_MESSAGE_CHARACTERS =
+    private static final String UI_FONT_PATH = "font/FusionPixel12SC.ttf";
+
+    /** 所有菜单、HUD 和悬停说明会使用到的中文字符。 */
+    private static final String CHINESE_UI_CHARACTERS =
         FreeTypeFontGenerator.DEFAULT_CHARS
+            + "地牢探险新游戏读取退出输入世界种子按开始返回暂停继续保存"
+            + "主菜单前吗并不直接成功逃脱结束存档位选择覆盖已有空无法"
             + "发现会锁定你的位置回合并通过追踪预测移动方向前方最多格"
-            + "靠近守护点时开始在两个远端之间巡逻逃跑拉开距离后"
-            + "附近有拾取激活第件获得：，；。、";
+            + "靠近守护点时开始在两个远端之间巡逻逃跑拉开距离后广度优先寻路"
+            + "附近有拾取激活第件获得增益：，；。、“”！？"
+            + "玩家当前生命地面可以通行墙壁不可并阻挡视野虚空"
+            + "关闭出口收集三遗物后开启已经进入即可获胜连接点"
+            + "草地水面花沙山树木岩石桥梁尚未未知区域"
+            + "猎手伏击者守卫巡逻胆小鬼尖刺陷阱踩上去失去点"
+            + "治愈泉满时恢复只能使用一次传送门另一座祝福宝箱打开随机一种"
+            + "苔藓潮湿裂纹破损泥松软碎石水晶金币钥匙宝珠符文"
+            + "强化雷达护盾冻结状态无存档覆盖该已有选择读取"
+            + "北南东西当前位置到怪放";
 
     // 标题字体。
     private final BitmapFont titleFont;
@@ -30,24 +43,15 @@ public class FontManager {
     private final BitmapFont tileFont;
 
     public FontManager() {
-        // 标题字体。
-        titleFont = createFont(
-            "font/JetBrainsMono-Medium.ttf",
-            40
-        );
+        // 原字体以 12px 像素网格设计，使用整数倍字号避免边缘发糊。
+        // 标题使用 4 倍字号，并用同色轮廓做轻度加粗。
+        titleFont = createPixelFont(48, 1.25f);
 
-        // 生成普通 UI 字体。
-        bodyFont = createFont(
-            "font/JetBrainsMonoNL-Regular.ttf",
-            24
-        );
+        // 菜单和 HUD 使用 2 倍字号，保持字体原始字重。
+        bodyFont = createPixelFont(24, 0f);
 
-        // 中文说明使用 Noto Sans SC，专有名词仍使用英文。
-        messageFont = createFont(
-            "font/NotoSansSC-VF.ttf",
-            22,
-            HUD_MESSAGE_CHARACTERS
-        );
+        // 情境日志和悬停说明同样使用 24px，避免非整数倍缩放。
+        messageFont = createPixelFont(24, 0f);
 
         // 生成地图 tile 字体。
         tileFont = createTileFont(
@@ -57,56 +61,31 @@ public class FontManager {
     }
 
     /**
-     * 根据 TTF 文件和字号生成普通 BitmapFont。
+     * 按字体原生 12px 网格生成像素 UI 字体。
      *
-     * 主要用于 titleFont 和 bodyFont。
-     *
-     * @param path TTF 字体在 assets 中的路径
-     * @param size 需要生成的字体像素大小
-     * @return 可以直接用于 SpriteBatch 绘制的 BitmapFont
+     * 同色轮廓只用于标题，相当于轻度加粗；正文不做轮廓处理，以免
+     * 小字号笔画粘连。最近邻过滤保证窗口缩放时仍保持硬朗像素边缘。
      */
-    private BitmapFont createFont(String path, int size) {
-        return createFont(path, size, FreeTypeFontGenerator.DEFAULT_CHARS);
-    }
-
-    /**
-     * 生成只包含指定字符的 UI 字体，避免把完整 CJK 字符集放进纹理。
-     */
-    private BitmapFont createFont(String path, int size, String characters) {
-
-        // 创建 FreeType 字体生成器。
-        FreeTypeFontGenerator generator =
-            new FreeTypeFontGenerator(
-                resolveAsset(path)
-            );
-
-        // 创建字体生成参数对象。
+    private BitmapFont createPixelFont(int size, float boldWidth) {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+            resolveAsset(UI_FONT_PATH)
+        );
         FreeTypeFontGenerator.FreeTypeFontParameter parameter =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-        // 设置实际生成字体的像素大小。
         parameter.size = size;
-        parameter.characters = characters;
+        parameter.characters = CHINESE_UI_CHARACTERS;
+        parameter.mono = true;
+        parameter.hinting = FreeTypeFontGenerator.Hinting.None;
+        parameter.kerning = true;
+        parameter.borderWidth = boldWidth;
+        parameter.borderColor = Color.WHITE;
+        parameter.borderStraight = true;
+        parameter.minFilter = Texture.TextureFilter.Nearest;
+        parameter.magFilter = Texture.TextureFilter.Nearest;
 
-        // 设置字体纹理缩小时的过滤方式。
-        //
-        // Linear 会在像素之间做插值，
-        // 因此边缘比较平滑。
-        parameter.minFilter = Texture.TextureFilter.Linear;
-
-        // 设置字体纹理放大时的过滤方式。
-        //
-        // Linear 放大时会进行平滑插值，
-        // 比 Nearest 更柔和。
-        parameter.magFilter = Texture.TextureFilter.Linear;
-
-        // 根据上面的参数真正生成 BitmapFont。
         BitmapFont font = generator.generateFont(parameter);
-
-        // 立即释放 generator 占用的 native 资源
         generator.dispose();
-
-        // 返回生成好的 BitmapFont。
         return font;
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
  * 负责生成完整的游戏世界。
  *
  * <p>地图生成依次经过房间生成、迷宫生成、区域连接、
- * 死胡同移除以及多余墙壁清理这几个阶段。
+ * 死胡同移除、多余墙壁清理以及可通行地块装饰这几个阶段。
  * 对于相同的随机种子，生成的地图应当保持一致。</p>
  *
  * <p>通过 {@link #generate(long)} 方法生成地图。</p>
@@ -51,6 +51,12 @@ public class WorldGenerator {
 
         // 去除多余墙壁
         removeWall(world);
+
+        // 使用独立随机流生成纯视觉地块，避免改变地图拓扑和其他随机序列。
+        DecorationGenerator.decorate(
+            world,
+            new GameRandom(seed ^ 0x6A09E667F3BCC909L)
+        );
 
         return world;
     }

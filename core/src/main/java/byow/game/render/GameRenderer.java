@@ -24,6 +24,7 @@ public class GameRenderer {
     private final LoadRenderer loadRenderer;
     private final ConfirmQuitRenderer confirmQuitRenderer;
     private final HudRenderer hudRenderer;
+    private final EndRenderer endRenderer;
 
     private final SpriteBatch batch;
     private final ShapeRenderer shapeRenderer;
@@ -52,6 +53,7 @@ public class GameRenderer {
         this.loadRenderer = new LoadRenderer(batch, fonts);
         this.confirmQuitRenderer = new ConfirmQuitRenderer(batch, fonts);
         this.hudRenderer = new HudRenderer(batch, fonts, shapeRenderer);
+        this.endRenderer = new EndRenderer(batch, fonts, shapeRenderer);
     }
 
     public void render(Engine engine) {
@@ -63,10 +65,23 @@ public class GameRenderer {
                     engine.player(),
                     engine.monsters(),
                     engine.items(),
+                    engine.sceneObjects(),
+                    engine.exit(),
                     engine.visible()
                 );
 
                 fogRenderer.render(engine.visible(), engine.explored());
+
+                int mouseX = Gdx.input.getX();
+                int mouseY = Gdx.input.getY();
+                var hoveredTile = worldRenderer.tileAtScreen(
+                    engine.visible(),
+                    mouseX,
+                    mouseY
+                );
+                String hoverDescription = hoveredTile == null
+                    ? null
+                    : HoverDescriptions.forTile(engine, hoveredTile.x(), hoveredTile.y());
 
                 useFullViewport();
                 useUiCamera();
@@ -79,8 +94,12 @@ public class GameRenderer {
                     engine.frozenMonsterTurns(),
                     engine.visionRadius() - DEFAULT_VISION_RADIUS,
                     engine.radarActive(),
+                    engine.radarDirection(),
                     engine.monsterNoticeType(),
-                    engine.nearbyItem()
+                    hoverDescription,
+                    engine.nearbyItem(),
+                    mouseX,
+                    mouseY
                 );
             }
 
@@ -113,6 +132,11 @@ public class GameRenderer {
                 useFullViewport();
                 useUiCamera();
                 confirmQuitRenderer.render();
+            }
+            case WIN, GAME_OVER -> {
+                useFullViewport();
+                useUiCamera();
+                endRenderer.render(engine.state() == byow.game.GameState.WIN);
             }
 
         }

@@ -29,7 +29,7 @@ public class LoadRenderer {
         drawCentered(
             batch,
             titleFont,
-            "LOAD GAME",
+            "读取游戏",
             height * 0.82f
         );
 
@@ -38,7 +38,7 @@ public class LoadRenderer {
             drawCentered(
                 batch,
                 bodyFont,
-                "Slot " + slot + " (" + slot + ")",
+                "存档位 " + slot + " (" + slot + ")",
                 height * (0.67f - (slot - 1) * 0.09f)
             );
         }
@@ -47,21 +47,21 @@ public class LoadRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "Press 1-5 to load",
+            "按 1-5 选择存档位",
             height * 0.20f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Empty slots cannot be loaded.",
+            "空存档位无法读取。",
             height * 0.14f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Back (B)",
+            "返回 (B)",
             height * 0.08f
         );
 

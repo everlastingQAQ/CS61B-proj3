@@ -11,6 +11,9 @@ import byow.game.monster.Monster;
 import byow.game.monster.MonsterType;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
+import byow.game.scene.SceneObject;
+import byow.game.scene.SceneObjectGenerator;
+import byow.game.scene.SceneObjectType;
 import byow.game.save.*;
 import byow.game.tile.TETile;
 import byow.game.visioncauculate.Visioncauculate;
@@ -22,6 +25,7 @@ import static byow.game.GameConfig.ITEM_NUMBER;
 import static byow.game.GameConfig.MONSTER_CONTACT_DAMAGE;
 import static byow.game.GameConfig.PLAYER_MAX_HP;
 import static byow.game.GameConfig.DEFAULT_VISION_RADIUS;
+import static byow.game.GameConfig.REQUIRED_ITEM_COUNT;
 import static byow.game.item.ItemRules.HEAL_AMOUNT;
 import static byow.game.item.ItemRules.SHIELD_CHARGES;
 import static byow.game.item.ItemRules.STUN_TURNS;
@@ -33,9 +37,6 @@ public class Engine {
 
     /** 首次发现怪物的提示保留多少个有效玩家回合。 */
     private static final int MONSTER_NOTICE_TURNS = 3;
-
-    /** 玩家在该曼哈顿距离内可以看到遗物说明。 */
-    private static final int ITEM_HINT_DISTANCE = 3;
 
     // =====================
     // Fields
@@ -49,6 +50,12 @@ public class Engine {
 
     /** 当前游戏物品。 */
     private List<Item> items;
+
+    /** 当前世界唯一的出口。 */
+    private GameExit exit;
+
+    /** 地图中的功能性场景物件。 */
+    private final List<SceneObject> sceneObjects = new ArrayList<>();
 
     /** 当前游戏中的全部怪物。空列表表示尚未激活怪物。 */
     private final List<Monster> monsters = new ArrayList<>();
@@ -99,6 +106,9 @@ public class Engine {
     /** 保存完成后是否返回主菜单。 */
     private boolean returnToMenuAfterSave;
 
+    /** 当前进度是否比最近一次存档更新。 */
+    private boolean hasUnsavedChanges;
+
     /** 是否请求退出游戏 */
     private boolean shouldQuit = false;
 
@@ -128,6 +138,7 @@ public class Engine {
             case PAUSE -> handlePauseInput(c);
             case SAVE -> handleSaveInput(c);
             case CONFIRM_QUIT -> handleConfirmQuitInput(c);
+            case WIN, GAME_OVER -> handleEndInput(c);
         }
     }
 
@@ -232,7 +243,9 @@ public class Engine {
                 returnToMenuAfterSave = false;
                 state = GameState.SAVE;
             }
-            case 'Q' -> state = GameState.CONFIRM_QUIT;
+            case 'Q' -> state = hasUnsavedChanges
+                ? GameState.CONFIRM_QUIT
+                : GameState.MENU;
         }
     }
 
@@ -250,6 +263,17 @@ public class Engine {
         }
     }
 
+    /** 结束画面只允许开始新游戏或返回主菜单。 */
+    private void handleEndInput(char c) {
+        switch (c) {
+            case 'N' -> {
+                seedString.setLength(0);
+                state = GameState.SEED;
+            }
+            case 'M', 'Q' -> state = GameState.MENU;
+        }
+    }
+
     /**
      * 处理游戏进行状态下的输入。
      * 后续将在这里处理玩家移动、保存游戏等操作。
@@ -257,8 +281,59 @@ public class Engine {
      * @param c 用户输入的字符
      */
     private void handlePlayingInput(char c) {
+        int dx = switch (c) {
+            case 'A' -> -1;
+            case 'D' -> 1;
+            default -> 0;
+        };
+        int dy = switch (c) {
+            case 'S' -> -1;
+            case 'W' -> 1;
+            default -> 0;
+        };
 
-        boolean moved = switch (c) {
+        if (dx != 0 || dy != 0) {
+            Monster collided = monsterAt(player.x() + dx, player.y() + dy);
+            if (collided != null) {
+                // 接触伤害本身已经改变进度，即使玩家没有成功换位也需重存。
+                hasUnsavedChanges = true;
+                // 主动撞怪会受到一次接触伤害。存活时双方交换位置，避免
+                // 怪物永久堵死单格走廊，也保证任意时刻不会坐标重叠。
+                resolveContact(collided);
+                if (state == GameState.PLAYING) {
+                    int previousX = player.x();
+                    int previousY = player.y();
+                    movePlayer(c);
+                    collided.moveTo(previousX, previousY);
+                    resolvePlayerInteractions();
+                }
+                if (state == GameState.PLAYING) {
+                    resolveMonsterInteractions(Set.of(collided.id()));
+                    updateVision();
+                    updateHudContext();
+                }
+                return;
+            }
+        }
+
+        boolean moved = movePlayer(c);
+
+        if (moved) {
+            hasUnsavedChanges = true;
+            resolvePlayerInteractions();
+            if (state == GameState.PLAYING) {
+                resolveMonsterInteractions(Set.of());
+            }
+            updateVision();
+            if (state == GameState.PLAYING) {
+                updateHudContext();
+            }
+        }
+    }
+
+    /** 执行不包含动态占位判断的基础玩家移动或暂停输入。 */
+    private boolean movePlayer(char c) {
+        return switch (c) {
             case 'W' -> player.moveUp(world);
             case 'A' -> player.moveLeft(world);
             case 'S' -> player.moveDown(world);
@@ -269,13 +344,15 @@ public class Engine {
             }
             default -> false;
         };
+    }
 
-        if (moved) {
-            resolvePlayerInteractions();
-            resolveMonsterInteractions();
-            updateVision();
-            updateHudContext();
+    private Monster monsterAt(int x, int y) {
+        for (Monster monster : monsters) {
+            if (monster.x() == x && monster.y() == y) {
+                return monster;
+            }
         }
+        return null;
     }
 
     // =====================
@@ -285,6 +362,55 @@ public class Engine {
     // 处理人物交互
     private void resolvePlayerInteractions() {
         checkItemCollection();
+        if (state == GameState.PLAYING) {
+            resolveSceneObjectInteraction();
+        }
+        if (state == GameState.PLAYING
+            && exit.active() && exit.contains(player.x(), player.y())) {
+            state = GameState.WIN;
+        }
+    }
+
+    /** 结算玩家脚下的场景物件；传送不会连锁触发目标位置。 */
+    private void resolveSceneObjectInteraction() {
+        SceneObject object = sceneObjectAt(player.x(), player.y());
+        if (object == null) {
+            return;
+        }
+
+        switch (object.type()) {
+            case SPIKE_TRAP -> {
+                player.takeDamage(1);
+                if (!player.isAlive()) {
+                    state = GameState.GAME_OVER;
+                }
+            }
+            case HEALING_FOUNTAIN -> {
+                if (player.currentHp() < player.maxHp()) {
+                    player.heal(1);
+                    object.consume();
+                }
+            }
+            case PORTAL -> {
+                if (monsterAt(object.targetX(), object.targetY()) == null) {
+                    player.teleportTo(world, object.targetX(), object.targetY());
+                }
+            }
+            case BLESSING_CHEST -> {
+                BuffType[] buffs = BuffType.values();
+                applyBuff(buffs[random.nextInt(buffs.length)]);
+                object.consume();
+            }
+        }
+    }
+
+    private SceneObject sceneObjectAt(int x, int y) {
+        for (SceneObject object : sceneObjects) {
+            if (object.contains(x, y)) {
+                return object;
+            }
+        }
+        return null;
     }
 
     // 处理是否收集到物品
@@ -313,6 +439,10 @@ public class Engine {
         items.remove(item);
         collectedCount++;
 
+        if (collectedCount >= REQUIRED_ITEM_COUNT) {
+            exit.activate(world);
+        }
+
         // 每种遗物都会激活一只固定类型的怪物。
         spawnMonster(rule.monsterType(), item.x(), item.y());
 
@@ -333,6 +463,7 @@ public class Engine {
             player,
             monsters,
             items,
+            sceneObjects,
             type
         );
 
@@ -356,7 +487,7 @@ public class Engine {
     }
 
     // 处理怪物交互
-    private void resolveMonsterInteractions() {
+    private void resolveMonsterInteractions(Set<Long> contactsAlreadyResolved) {
         // Stun 直接跳过整个怪物回合，不覆盖每只怪物原有的行为状态。
         if (frozenMonsterTurns > 0) {
             frozenMonsterTurns--;
@@ -364,23 +495,33 @@ public class Engine {
         }
 
         MonsterTurnResult result = monsterController.takeTurn(world, monsters, player);
-        resolveMonsterContacts(result.contacts());
+        resolveMonsterContacts(result.contacts(), contactsAlreadyResolved);
     }
 
     /** 结算本回合尝试进入玩家位置的怪物。 */
-    private void resolveMonsterContacts(List<Monster> contacts) {
+    private void resolveMonsterContacts(
+        List<Monster> contacts,
+        Set<Long> contactsAlreadyResolved
+    ) {
         // 接触事件已经按怪物稳定 ID 排序，依次结算每一次攻击。
-        for (Monster ignored : contacts) {
-            // 一层 Shield 只抵挡一次怪物攻击。
-            if (player.consumeShield()) {
+        for (Monster monster : contacts) {
+            if (contactsAlreadyResolved.contains(monster.id())) {
                 continue;
             }
-
-            player.takeDamage(MONSTER_CONTACT_DAMAGE);
-            if (!player.isAlive()) {
-                // TODO: 接入游戏结束状态和游戏结束画面。
+            resolveContact(monster);
+            if (state == GameState.GAME_OVER) {
                 break;
             }
+        }
+    }
+
+    /** 结算一次怪物接触；护盾优先抵消伤害。 */
+    private void resolveContact(Monster ignored) {
+        if (!player.consumeShield()) {
+            player.takeDamage(MONSTER_CONTACT_DAMAGE);
+        }
+        if (!player.isAlive()) {
+            state = GameState.GAME_OVER;
         }
     }
 
@@ -450,8 +591,21 @@ public class Engine {
         // 创建人物
         player = new Player(world, random);
 
+        // 出口位于距离出生点最远的可达位置，激活前不可进入。
+        exit = GameExit.place(world, player);
+
         // 创建物品
         items = ItemGenerator.generate(world, player, random);
+
+        // 独立随机流避免新增场景物件改变遗物和怪物的既有随机序列。
+        sceneObjects.clear();
+        sceneObjects.addAll(SceneObjectGenerator.generate(
+            world,
+            player,
+            items,
+            exit,
+            new GameRandom(seed ^ 0x5CE0B1EC7L)
+        ));
 
         // 新游戏开始时没有怪物，拾取遗物后再逐个激活。
         monsters.clear();
@@ -475,6 +629,9 @@ public class Engine {
         explored = new boolean[world.length][world[0].length];
 
         updateVision();
+
+        // 新世界尚未写入任何存档。
+        hasUnsavedChanges = true;
 
         // 更改游戏状态
         state = GameState.PLAYING;
@@ -579,6 +736,24 @@ public class Engine {
         // 设置拾取的物品个数
         collectedCount = ITEM_NUMBER - items().size();
 
+        // 新存档直接恢复出口；旧存档自动补建出口以保持兼容。
+        if (gamesave.exit() == null) {
+            exit = GameExit.place(world, player);
+            if (collectedCount >= REQUIRED_ITEM_COUNT) {
+                exit.activate(world);
+            }
+        } else {
+            exit = gamesave.exit().toExit();
+            exit.syncTile(world);
+        }
+
+        sceneObjects.clear();
+        if (gamesave.sceneObjects() != null) {
+            for (SceneObjectData data : gamesave.sceneObjects()) {
+                sceneObjects.add(data.toSceneObject());
+            }
+        }
+
         // 加载可视范围
         visionRadius = gamesave.visionRadius() > 0
             ? gamesave.visionRadius()
@@ -595,6 +770,9 @@ public class Engine {
         this.visible = new boolean[world.length][world[0].length];
         updateVision();
         updateHudContext();
+
+        // 刚加载的状态与磁盘存档一致，退出时无需再次确认。
+        hasUnsavedChanges = false;
     }
 
     /**
@@ -619,6 +797,11 @@ public class Engine {
             monsterDataList.add(MonsterData.from(monster));
         }
 
+        List<SceneObjectData> sceneObjectDataList = new ArrayList<>();
+        for (SceneObject object : sceneObjects) {
+            sceneObjectDataList.add(SceneObjectData.from(object));
+        }
+
         GameSave gameSave = new GameSave(
             new WorldData(toTileType(world)),
             new PlayerData(
@@ -638,9 +821,12 @@ public class Engine {
             nextMonsterId,
             frozenMonsterTurns,
             radarActive,
-            new ArrayList<>(seenMonsterTypes)
+            new ArrayList<>(seenMonsterTypes),
+            ExitData.from(exit),
+            sceneObjectDataList
             );
         saveManager.save(slot, gameSave);
+        hasUnsavedChanges = false;
     }
 
     // =====================
@@ -667,6 +853,10 @@ public class Engine {
         return Collections.unmodifiableList(monsters);
     }
 
+    public List<SceneObject> sceneObjects() {
+        return Collections.unmodifiableList(sceneObjects);
+    }
+
     public String seedString() {
         return seedString.toString();
     }
@@ -691,19 +881,43 @@ public class Engine {
         return radarActive;
     }
 
+    /** Radar 激活时返回出口相对玩家的八方向提示。 */
+    public String radarDirection() {
+        if (!radarActive || exit == null) {
+            return "";
+        }
+
+        int dx = Integer.compare(exit.x(), player.x());
+        int dy = Integer.compare(exit.y(), player.y());
+        if (dx == 0 && dy == 0) {
+            return "当前位置";
+        }
+
+        String vertical = dy > 0 ? "北" : dy < 0 ? "南" : "";
+        String horizontal = dx > 0 ? "东" : dx < 0 ? "西" : "";
+        return vertical + horizontal;
+    }
+
+    public GameExit exit() {
+        return exit;
+    }
+
     /** 返回当前首次进入视野、需要在 HUD 中介绍的怪物类型。 */
     public MonsterType monsterNoticeType() {
         return monsterNoticeType;
     }
 
     /**
-     * 返回玩家附近最近的遗物；没有距离不超过 3 格的遗物时返回 null。
+     * 返回当前视野中离玩家最近的遗物；视野外遗物不属于“附近”。
      */
     public Item nearbyItem() {
         Item nearest = null;
-        int nearestDistance = ITEM_HINT_DISTANCE + 1;
+        int nearestDistance = Integer.MAX_VALUE;
 
         for (Item item : items) {
+            if (!visible[item.x()][item.y()]) {
+                continue;
+            }
             int distance = Math.abs(item.x() - player.x())
                 + Math.abs(item.y() - player.y());
             if (distance < nearestDistance) {

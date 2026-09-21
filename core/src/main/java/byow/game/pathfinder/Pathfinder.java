@@ -94,6 +94,11 @@ public final class Pathfinder {
         return farthest;
     }
 
+    /** 返回从起点到每个格子的最短距离图；不可达位置为 -1。 */
+    public static int[][] distancesFrom(TETile[][] world, int startX, int startY) {
+        return calculateDistances(world, startX, startY);
+    }
+
     private static int[][] calculateDistances(TETile[][] world, int startX, int startY) {
         Queue<Position> queue = new ArrayDeque<>();
         int[][] distances = new int[world.length][world[0].length];

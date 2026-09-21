@@ -41,7 +41,7 @@ public class MenuRenderer {
         drawCentered(
             batch,
             titleFont,
-            "CS61B: THE GAME",
+            "地牢探险",
             height * 0.75f
         );
 
@@ -50,21 +50,21 @@ public class MenuRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "New Game (N)",
+            "新游戏 (N)",
             height * 0.50f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Load Game (L)",
+            "读取游戏 (L)",
             height * 0.42f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Quit (Q)",
+            "退出游戏 (Q)",
             height * 0.34f
         );
 

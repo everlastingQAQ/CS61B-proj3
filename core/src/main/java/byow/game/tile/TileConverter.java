@@ -53,35 +53,14 @@ public class TileConverter {
     /**
      * 单个 TETile 转 TileType。
      */
-    private static TileType toTileType(TETile tile) {
-
-        return switch (tile.description()) {
-
-            case "wall" -> TileType.WALL;
-            case "floor" -> TileType.FLOOR;
-            case "nothing" -> TileType.NOTHING;
-            case "grass" -> TileType.GRASS;
-            case "water" -> TileType.WATER;
-            case "flower" -> TileType.FLOWER;
-            case "locked door" -> TileType.CLOSED_DOOR;
-            case "unlocked door" -> TileType.OPEN_DOOR;
-            case "sand" -> TileType.SAND;
-            case "mountain" -> TileType.MOUNTAIN;
-            case "tree" -> TileType.TREE;
-            case "rock" -> TileType.ROCK;
-            case "bridge" -> TileType.BRIDGE;
-
-            default ->
-                throw new IllegalArgumentException(
-                    "Unknown tile: " + tile.description()
-                );
-        };
+    public static TileType toTileType(TETile tile) {
+        return TileType.fromDescription(tile.description());
     }
 
     /**
      * 单个 TileType 转 TETile。
      */
-    private static TETile toTETile(TileType type) {
+    public static TETile toTETile(TileType type) {
 
         return switch (type) {
             case AVATAR -> Tileset.AVATAR;
@@ -94,6 +73,10 @@ public class TileConverter {
             case CLOSED_DOOR -> Tileset.CLOSED_DOOR;
             case OPEN_DOOR -> Tileset.OPEN_DOOR;
             case SAND -> Tileset.SAND;
+            case MOSS -> Tileset.MOSS;
+            case CRACKED_FLOOR -> Tileset.CRACKED_FLOOR;
+            case MUD -> Tileset.MUD;
+            case PEBBLES -> Tileset.PEBBLES;
             case MOUNTAIN -> Tileset.MOUNTAIN;
             case TREE -> Tileset.TREE;
             case ROCK -> Tileset.ROCK;

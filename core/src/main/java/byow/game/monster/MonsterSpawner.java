@@ -3,6 +3,7 @@ package byow.game.monster;
 import byow.game.item.Item;
 import byow.game.player.Player;
 import byow.game.random.GameRandom;
+import byow.game.scene.SceneObject;
 import byow.game.tile.TETile;
 import byow.game.tile.TileRules;
 
@@ -33,6 +34,7 @@ public final class MonsterSpawner {
         Player player,
         List<Monster> monsters,
         List<Item> items,
+        List<SceneObject> sceneObjects,
         MonsterType type
     ) {
         List<Position> distantPositions = collectPositions(
@@ -40,12 +42,13 @@ public final class MonsterSpawner {
             player,
             monsters,
             items,
+            sceneObjects,
             true
         );
 
         // 小地图可能不存在足够远的位置，此时只保留可行走和不重叠要求。
         List<Position> candidates = distantPositions.isEmpty()
-            ? collectPositions(world, player, monsters, items, false)
+            ? collectPositions(world, player, monsters, items, sceneObjects, false)
             : distantPositions;
 
         if (candidates.isEmpty()) {
@@ -62,6 +65,7 @@ public final class MonsterSpawner {
         Player player,
         List<Monster> monsters,
         List<Item> items,
+        List<SceneObject> sceneObjects,
         boolean requireDistance
     ) {
         List<Position> positions = new ArrayList<>();
@@ -78,6 +82,9 @@ public final class MonsterSpawner {
                     continue;
                 }
                 if (hasItemAt(items, x, y)) {
+                    continue;
+                }
+                if (hasSceneObjectAt(sceneObjects, x, y)) {
                     continue;
                 }
                 if (requireDistance
@@ -110,6 +117,32 @@ public final class MonsterSpawner {
             }
         }
         return false;
+    }
+
+    private static boolean hasSceneObjectAt(
+        List<SceneObject> sceneObjects,
+        int x,
+        int y
+    ) {
+        for (SceneObject object : sceneObjects) {
+            if (object.contains(x, y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 保留旧调用接口，便于独立测试和旧代码迁移。 */
+    public static Monster spawn(
+        long id,
+        TETile[][] world,
+        GameRandom random,
+        Player player,
+        List<Monster> monsters,
+        List<Item> items,
+        MonsterType type
+    ) {
+        return spawn(id, world, random, player, monsters, items, List.of(), type);
     }
 
     /** 保存生成候选位置。 */

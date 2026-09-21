@@ -29,7 +29,7 @@ public class PauseRenderer {
         drawCentered(
             batch,
             titleFont,
-            "PAUSED",
+            "游戏暂停",
             height * 0.75f
         );
 
@@ -37,21 +37,21 @@ public class PauseRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "Resume (P)",
+            "继续游戏 (P)",
             height * 0.52f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Save Game (S)",
+            "保存游戏 (S)",
             height * 0.43f
         );
 
         drawCentered(
             batch,
             bodyFont,
-            "Quit (Q)",
+            "返回主菜单 (Q)",
             height * 0.34f
         );
 

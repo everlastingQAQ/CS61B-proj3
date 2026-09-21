@@ -32,14 +32,32 @@ public class Tileset {
     public static final TETile MONSTER =
         new TETile('◆', new Color(255, 90, 90), new Color(45, 55, 70), "monster");
 
-    public static final TETile GRASS = new TETile('"', Color.green, Color.black, "grass");
+    public static final TETile GRASS = new TETile(
+        '"', new Color(105, 185, 120), new Color(38, 62, 55), "grass"
+    );
     public static final TETile WATER = new TETile('≈', Color.blue, Color.black, "water");
-    public static final TETile FLOWER = new TETile('❀', Color.magenta, Color.pink, "flower");
-    public static final TETile CLOSED_DOOR = new TETile('█', Color.orange, Color.black,
+    public static final TETile FLOWER = new TETile(
+        '❀', new Color(230, 140, 210), new Color(38, 62, 55), "flower"
+    );
+    public static final TETile CLOSED_DOOR = new TETile('X', Color.orange, new Color(75, 55, 35),
         "locked door");
     public static final TETile OPEN_DOOR = new TETile('▢', Color.orange, Color.black,
         "unlocked door");
-    public static final TETile SAND = new TETile('▒', Color.yellow, Color.black, "sand");
+    public static final TETile SAND = new TETile(
+        '▒', new Color(215, 185, 105), new Color(72, 62, 45), "sand"
+    );
+    public static final TETile MOSS = new TETile(
+        ',', new Color(100, 175, 105), new Color(37, 58, 48), "moss"
+    );
+    public static final TETile CRACKED_FLOOR = new TETile(
+        'x', new Color(135, 160, 175), new Color(45, 55, 70), "cracked floor"
+    );
+    public static final TETile MUD = new TETile(
+        ';', new Color(165, 120, 75), new Color(60, 44, 37), "mud"
+    );
+    public static final TETile PEBBLES = new TETile(
+        ':', new Color(175, 180, 185), new Color(54, 60, 68), "pebbles"
+    );
     public static final TETile MOUNTAIN = new TETile('▲', Color.gray, Color.black, "mountain");
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree");
     public static final TETile ROCK = new TETile('●', Color.gray, Color.black, "rock");
@@ -49,4 +67,3 @@ public class Tileset {
     private Tileset() {
     }
 }
-

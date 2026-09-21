@@ -15,5 +15,7 @@ public record GameSave(
     long nextMonsterId,
     int frozenMonsterTurns,
     boolean radarActive,
-    List<MonsterType> seenMonsterTypes
+    List<MonsterType> seenMonsterTypes,
+    ExitData exit,
+    List<SceneObjectData> sceneObjects
 ) {}
