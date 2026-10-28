@@ -77,17 +77,6 @@ java -Dbyow.saveDir=/absolute/path/to/save -jar lwjgl3/build/libs/BYOW-1.0.0.jar
 
 保存时先在同目录写临时文件，再执行原子替换；文件系统不支持原子替换时报告失败。该机制不保留多份历史备份。当前限制为单份文件最多 16 MiB、地图每个维度 3～1024 格。
 
-## 人工试玩与反馈
-
-试玩时可指定独立的存档目录，避免覆盖已有进度。在项目根目录执行：
-
-```bash
-java -Dbyow.saveDir="$PWD/build/manual-playtest" \
-  -jar lwjgl3/build/libs/BYOW-1.0.0.jar
-```
-
-建议依次检查种子输入与移动、空槽提示、保存与覆盖取消、重新加载进度，以及收集 3 件遗物后的出口和胜负流程。遇到问题时提供种子、操作步骤、实际结果与截图；显示异常还应说明系统、Java 版本和是否调整过窗口大小。
-
 ## 实现结构
 
 ```mermaid
@@ -107,6 +96,4 @@ flowchart LR
 
 桌面工程框架由 [gdx-liftoff](https://github.com/libgdx/gdx-liftoff) 生成，渲染基于 [libGDX](https://libgdx.com/)，JSON 使用 Gson。
 
-## 后续完善
 
-后续可补充操作演示，并继续评估 Guardian 出生位置、走廊拥堵和增益平衡。寻路查询暂未缓存，性能优化应先测量再决定。
