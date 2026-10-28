@@ -101,7 +101,19 @@ public class Engine {
     private GameState state = GameState.MENU;
 
     /** 游戏存档管理器 */
-    private final SaveManager saveManager = new SaveManager();
+    private final SaveManager saveManager;
+
+    private final boolean[] occupiedSaveSlots = new boolean[5];
+    private String uiMessage = "";
+    private int pendingOverwriteSlot;
+
+    public Engine() {
+        this(new SaveManager());
+    }
+
+    public Engine(SaveManager saveManager) {
+        this.saveManager = Objects.requireNonNull(saveManager);
+    }
 
     /** 保存完成后是否返回主菜单。 */
     private boolean returnToMenuAfterSave;
@@ -129,6 +141,7 @@ public class Engine {
     public void handleKey(char key) {
 
         char c = Character.toUpperCase(key);
+        uiMessage = "";
 
         switch (state) {
             case MENU -> handleMenuInput(c);
@@ -161,7 +174,10 @@ public class Engine {
                 seedString.setLength(0);
                 state = GameState.SEED;
             }
-            case 'L' -> state = GameState.LOAD;
+            case 'L' -> {
+                refreshSaveSlots();
+                state = GameState.LOAD;
+            }
             case 'Q' -> quit();
         }
     }
@@ -185,8 +201,16 @@ public class Engine {
             return;
         }
 
-        if (Character.isDigit(c)) {
-            seedString.append(c);
+        if (c == '\b' || c == '\u007f') {
+            if (!seedString.isEmpty()) {
+                seedString.deleteCharAt(seedString.length() - 1);
+            }
+        } else if (c >= '0' && c <= '9') {
+            if (seedString.length() < 19) {
+                seedString.append(c);
+            } else {
+                uiMessage = "种子最多 19 位。";
+            }
         }
     }
 
@@ -198,38 +222,69 @@ public class Engine {
             state = GameState.MENU;
             return;
         }
-
         if (c < '1' || c > '5') {
             return;
         }
-        int slot = Character.getNumericValue(c);
-        if (!saveManager.exists(slot)) {
-            return; // TODO：保持 LOAD 状态，之后显示“该位置没有存档”
+        try {
+            loadGame(c - '0');
+        } catch (SaveException exception) {
+            uiMessage = exception.getMessage();
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            uiMessage = "存档数据无效，无法读取。";
         }
-        loadGame(slot);
-        state = GameState.PLAYING;
     }
 
-    /**
-     * 处理保存时的输入
-     * */
     private void handleSaveInput(char c) {
+        if (pendingOverwriteSlot != 0) {
+            if (c == 'Y') {
+                int slot = pendingOverwriteSlot;
+                pendingOverwriteSlot = 0;
+                finishSave(slot);
+            } else if (c == 'N' || c == 'B') {
+                pendingOverwriteSlot = 0;
+            }
+            return;
+        }
         if (c == 'B') {
             state = GameState.PAUSE;
             returnToMenuAfterSave = false;
             return;
         }
-
         if (c < '1' || c > '5') {
             return;
         }
+        int slot = c - '0';
+        try {
+            if (saveManager.exists(slot)) {
+                occupiedSaveSlots[slot - 1] = true;
+                pendingOverwriteSlot = slot;
+                return;
+            }
+            finishSave(slot);
+        } catch (SaveException exception) {
+            uiMessage = exception.getMessage();
+        }
+    }
 
-        int slot = Character.getNumericValue(c);
-        saveGame(slot);
-        if (returnToMenuAfterSave) {
-            state = GameState.MENU;
-        } else {
-            state = GameState.PAUSE;
+    private void finishSave(int slot) {
+        try {
+            saveGame(slot);
+            occupiedSaveSlots[slot - 1] = true;
+            uiMessage = "保存成功。";
+            state = returnToMenuAfterSave ? GameState.MENU : GameState.PAUSE;
+            returnToMenuAfterSave = false;
+        } catch (SaveException exception) {
+            uiMessage = exception.getMessage();
+        }
+    }
+
+    private void refreshSaveSlots() {
+        try {
+            for (int slot = 1; slot <= occupiedSaveSlots.length; slot++) {
+                occupiedSaveSlots[slot - 1] = saveManager.exists(slot);
+            }
+        } catch (SaveException exception) {
+            uiMessage = exception.getMessage();
         }
     }
 
@@ -241,6 +296,8 @@ public class Engine {
             case 'P' -> state = GameState.PLAYING;
             case 'S' -> {
                 returnToMenuAfterSave = false;
+                pendingOverwriteSlot = 0;
+                refreshSaveSlots();
                 state = GameState.SAVE;
             }
             case 'Q' -> state = hasUnsavedChanges
@@ -256,6 +313,8 @@ public class Engine {
         switch(c) {
             case 'Y' -> {
                 returnToMenuAfterSave = true;
+                pendingOverwriteSlot = 0;
+                refreshSaveSlots();
                 state = GameState.SAVE;
             }
             case 'N' -> state = GameState.MENU;
@@ -579,6 +638,7 @@ public class Engine {
         try {
             seed = Long.parseLong(seedString.toString());
         } catch (NumberFormatException e) {
+            uiMessage = "请输入 0 到 9223372036854775807 的种子。";
             return;
         }
 
@@ -664,115 +724,81 @@ public class Engine {
      * 根据存档加载游戏
      **/
     private void loadGame(int slot) {
-        // 加载 gamesave
-        GameSave gamesave = saveManager.load(slot);
+        GameSave saved = saveManager.load(slot);
 
-        // 加载随机数
-        this.random = new GameRandom(gamesave.randomState());
-
-        // 加载世界
-        this.world = toTETile(gamesave.worldData().world());
-
-        // 加载人物
-        PlayerData playerData = gamesave.playerData();
-
-        // 旧存档没有生命值字段时，使用默认满生命值。
-        boolean hasSavedHealth = playerData.maxHp() > 0;
-        int maxHp = hasSavedHealth ? playerData.maxHp() : PLAYER_MAX_HP;
-        int currentHp = hasSavedHealth
-            ? Math.max(0, Math.min(playerData.currentHp(), maxHp))
-            : maxHp;
-        int shieldCharges = Math.max(0, playerData.shieldCharges());
-
-        this.player = new Player(
-            world,
-            playerData.x(),
-            playerData.y(),
-            playerData.lastMoveDx(),
-            playerData.lastMoveDy(),
-            currentHp,
-            maxHp,
-            shieldCharges
-        );
-
-        // 加载物品
-        this.items = new ArrayList<>();
-
-        // 加载全部怪物；旧存档没有 monsters 字段时按空列表处理。
-        monsters.clear();
-        if (gamesave.monsters() != null) {
-            for (MonsterData data : gamesave.monsters()) {
-                monsters.add(data.toMonster());
+        // 先构造完整候选状态，全部成功后才替换当前游戏。
+        TETile[][] loadedWorld = toTETile(saved.worldData().world());
+        PlayerData data = saved.playerData();
+        int maxHp = data.maxHp() > 0 ? data.maxHp() : PLAYER_MAX_HP;
+        int hp = data.maxHp() > 0 ? data.currentHp() : maxHp;
+        Player loadedPlayer = new Player(loadedWorld, data.x(), data.y(),
+            data.lastMoveDx(), data.lastMoveDy(), hp, maxHp, data.shieldCharges());
+        List<Item> loadedItems = new ArrayList<>();
+        for (ItemData item : saved.items()) {
+            loadedItems.add(new Item(item.x(), item.y(), item.type()));
+        }
+        List<Monster> loadedMonsters = new ArrayList<>();
+        if (saved.monsters() != null) {
+            for (MonsterData monster : saved.monsters()) {
+                loadedMonsters.add(monster.toMonster());
+            }
+        }
+        int loadedCount = ITEM_NUMBER - loadedItems.size();
+        GameExit loadedExit;
+        if (saved.exit() == null) {
+            loadedExit = GameExit.place(loadedWorld, loadedPlayer);
+            if (loadedCount >= REQUIRED_ITEM_COUNT) {
+                loadedExit.activate(loadedWorld);
+            }
+        } else {
+            loadedExit = saved.exit().toExit();
+            loadedExit.syncTile(loadedWorld);
+        }
+        List<SceneObject> loadedObjects = new ArrayList<>();
+        if (saved.sceneObjects() != null) {
+            for (SceneObjectData object : saved.sceneObjects()) {
+                loadedObjects.add(object.toSceneObject());
+            }
+        }
+        int loadedRadius = saved.visionRadius() > 0
+            ? saved.visionRadius() : DEFAULT_VISION_RADIUS;
+        boolean[][] loadedExplored = saved.explored() == null
+            ? new boolean[loadedWorld.length][loadedWorld[0].length] : copyGrid(saved.explored());
+        boolean[][] loadedVisible = Visioncauculate.calculate(loadedWorld, loadedPlayer, loadedRadius);
+        for (int x = 0; x < loadedWorld.length; x++) {
+            for (int y = 0; y < loadedWorld[0].length; y++) {
+                loadedExplored[x][y] |= loadedVisible[x][y];
             }
         }
 
-        long minimumNextId = monsters.stream()
-            .mapToLong(Monster::id)
-            .max()
-            .orElse(0L) + 1;
-        nextMonsterId = Math.max(gamesave.nextMonsterId(), minimumNextId);
-
-        // 恢复由 Engine 管理的 Buff 状态；旧存档缺少字段时使用 0 和 false。
-        frozenMonsterTurns = Math.max(0, gamesave.frozenMonsterTurns());
-        radarActive = gamesave.radarActive();
+        world = loadedWorld;
+        player = loadedPlayer;
+        items = loadedItems;
+        monsters.clear();
+        monsters.addAll(loadedMonsters);
+        sceneObjects.clear();
+        sceneObjects.addAll(loadedObjects);
+        exit = loadedExit;
+        collectedCount = loadedCount;
+        random = new GameRandom(saved.randomState());
+        long minimumNextId = monsters.stream().mapToLong(Monster::id).max().orElse(0L) + 1;
+        nextMonsterId = Math.max(saved.nextMonsterId(), minimumNextId);
+        frozenMonsterTurns = saved.frozenMonsterTurns();
+        radarActive = saved.radarActive();
         seenMonsterTypes.clear();
-        if (gamesave.seenMonsterTypes() != null) {
-            seenMonsterTypes.addAll(gamesave.seenMonsterTypes());
+        if (saved.seenMonsterTypes() != null) {
+            seenMonsterTypes.addAll(saved.seenMonsterTypes());
         }
         monsterNoticeType = null;
         monsterNoticeTurns = 0;
-
-        // 加载物品栏
-        for (ItemData data : gamesave.items()) {
-            this.items.add(
-                new Item(
-                    data.x(),
-                    data.y(),
-                    data.type()
-                )
-            );
-        }
-
-        // 设置拾取的物品个数
-        collectedCount = ITEM_NUMBER - items().size();
-
-        // 新存档直接恢复出口；旧存档自动补建出口以保持兼容。
-        if (gamesave.exit() == null) {
-            exit = GameExit.place(world, player);
-            if (collectedCount >= REQUIRED_ITEM_COUNT) {
-                exit.activate(world);
-            }
-        } else {
-            exit = gamesave.exit().toExit();
-            exit.syncTile(world);
-        }
-
-        sceneObjects.clear();
-        if (gamesave.sceneObjects() != null) {
-            for (SceneObjectData data : gamesave.sceneObjects()) {
-                sceneObjects.add(data.toSceneObject());
-            }
-        }
-
-        // 加载可视范围
-        visionRadius = gamesave.visionRadius() > 0
-            ? gamesave.visionRadius()
-            : DEFAULT_VISION_RADIUS;
-
-        // 加载已探索区域
-        if (gamesave.explored() == null) {
-            this.explored = new boolean[world.length][world[0].length];
-        } else {
-            this.explored = copyGrid(gamesave.explored());
-        }
-
-        // 加载玩家可视范围
-        this.visible = new boolean[world.length][world[0].length];
-        updateVision();
+        visionRadius = loadedRadius;
+        explored = loadedExplored;
+        visible = loadedVisible;
         updateHudContext();
-
-        // 刚加载的状态与磁盘存档一致，退出时无需再次确认。
         hasUnsavedChanges = false;
+        state = !player.isAlive() ? GameState.GAME_OVER
+            : exit.active() && exit.contains(player.x(), player.y()) ? GameState.WIN
+            : GameState.PLAYING;
     }
 
     /**
@@ -832,6 +858,19 @@ public class Engine {
     // =====================
     // Getters
     // =====================
+
+    public String uiMessage() {
+        return uiMessage;
+    }
+
+    public int pendingOverwriteSlot() {
+        return pendingOverwriteSlot;
+    }
+
+    public boolean saveSlotExists(int slot) {
+        saveManager.validateSlot(slot);
+        return occupiedSaveSlots[slot - 1];
+    }
 
     public GameState state() {
         return state;

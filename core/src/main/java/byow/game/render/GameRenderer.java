@@ -111,22 +111,22 @@ public class GameRenderer {
             case SEED -> {
                 useFullViewport();
                 useUiCamera();
-                seedRenderer.render(engine.seedString());
+                seedRenderer.render(engine.seedString(), engine.uiMessage());
             }
             case PAUSE -> {
                 useFullViewport();
                 useUiCamera();
-                pauseRenderer.render();
+                pauseRenderer.render(engine.uiMessage());
             }
             case SAVE -> {
                 useFullViewport();
                 useUiCamera();
-                saveRenderer.render();
+                saveRenderer.render(engine);
             }
             case LOAD -> {
                 useFullViewport();
                 useUiCamera();
-                loadRenderer.render();
+                loadRenderer.render(engine);
             }
             case CONFIRM_QUIT -> {
                 useFullViewport();

@@ -20,7 +20,7 @@ public class PauseRenderer {
         this.bodyFont = fonts.body();
     }
 
-    public void render() {
+    public void render(String message) {
         float height = Gdx.graphics.getHeight();
 
         batch.begin();
@@ -54,6 +54,9 @@ public class PauseRenderer {
             "返回主菜单 (Q)",
             height * 0.34f
         );
+
+        bodyFont.setColor(Color.LIGHT_GRAY);
+        drawCentered(batch, bodyFont, message, height * 0.20f);
 
         batch.end();
     }

@@ -22,7 +22,7 @@ public class SeedRenderer {
         this.shapeRenderer = shapeRenderer;
     }
 
-    public void render(String seed) {
+    public void render(String seed, String message) {
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
 
@@ -63,7 +63,7 @@ public class SeedRenderer {
         drawCentered(
             batch,
             bodyFont,
-            "按 S 开始游戏",
+            "按 S 开始游戏，退格删除",
             height * 0.35f
         );
 
@@ -73,6 +73,9 @@ public class SeedRenderer {
             "返回 (B)",
             height * 0.27f
         );
+
+        bodyFont.setColor(Color.SALMON);
+        drawCentered(batch, bodyFont, message, height * 0.18f);
 
         batch.end();
     }

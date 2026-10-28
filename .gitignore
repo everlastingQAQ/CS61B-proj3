@@ -167,3 +167,21 @@ Thumbs.db
 
 ## Cache
 /save/
+
+## Runtime saves:
+/assets/save/
+
+## Local working notes (keep on disk, out of the repository):
+/PROJECT_STATUS.md
+/core/src/DESIGN.md
+/docs/TECHNICAL_NOTES.md
+# Put future private review, resume and handoff notes in these directories.
+/docs/local/
+/docs/ai/
+
+## AI assistant instructions and local metadata:
+AGENTS.md
+CLAUDE.md
+.codex/
+.claude/
+.ai/
